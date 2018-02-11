@@ -1,0 +1,469 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "dga/A2Q7i3lMJbe5KsD42WAwH8c=",
+			"path": "github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/briantigerchow/pubsub",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "S8cJmDHFrhczG+YPWEgAjKgVSC8=",
+			"path": "github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/mitchellh/go-homedir",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "IZIwrraFrRcfTsKZhaoCQyCgpmY=",
+			"path": "github.com/ipfs/go-ipfs/blocks/blockstore",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "uEWxHMMY5GhJLjkx+ev3xqiX9hc=",
+			"path": "github.com/ipfs/go-ipfs/blocks/blockstore/util",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "dEOKMHfSp20A/OC9X62IGsd4/QE=",
+			"path": "github.com/ipfs/go-ipfs/blockservice",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "4SWgp/8jq2KvR+Wk+UPa02yy0dw=",
+			"path": "github.com/ipfs/go-ipfs/commands",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "3uqiOL7eLPPEk4dGRQWIKp3tx4E=",
+			"path": "github.com/ipfs/go-ipfs/commands/legacy",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "JBlHOw4SNFr7ztlvVe5nQ21u7PU=",
+			"path": "github.com/ipfs/go-ipfs/core",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "ndOLOju1+avdkx7IcU5RnNoc/jg=",
+			"path": "github.com/ipfs/go-ipfs/core/commands",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "Jw5466KFesJWKOylj/DrJkx5InI=",
+			"path": "github.com/ipfs/go-ipfs/core/commands/dag",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "2rD8a9uVWyWeAoHRaDZ6MDeU7/Y=",
+			"path": "github.com/ipfs/go-ipfs/core/commands/e",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "3iHy2Zs3oYzC2bDUyq3DZMHObLA=",
+			"path": "github.com/ipfs/go-ipfs/core/commands/object",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "TcQZB5+6yHmE6f/tofPv7se9eT0=",
+			"path": "github.com/ipfs/go-ipfs/core/commands/unixfs",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "1B4s396FAxGR4VoUvF66V3zx7Jc=",
+			"path": "github.com/ipfs/go-ipfs/core/coredag",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "Wgsx5xxAjgF0RVpixT0pqiJ1ltE=",
+			"path": "github.com/ipfs/go-ipfs/core/corerepo",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "5I9dXCE6uniDoErG9saaavUqbYc=",
+			"path": "github.com/ipfs/go-ipfs/core/coreunix",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "jhC5raNO+Zbzww2OPK0T15GPpVc=",
+			"path": "github.com/ipfs/go-ipfs/exchange",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "AD+bWXiZ45bAZF7IVSmhXGGljm0=",
+			"path": "github.com/ipfs/go-ipfs/exchange/bitswap",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "CJNbN3KpS70V80an52YH+6lXbmQ=",
+			"path": "github.com/ipfs/go-ipfs/exchange/bitswap/decision",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "Jy7N6GNHPoKjPZyeGbtkMk1zcnw=",
+			"path": "github.com/ipfs/go-ipfs/exchange/bitswap/message",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "pLXr0U2ahNdMVdYv8X98/WcjH+s=",
+			"path": "github.com/ipfs/go-ipfs/exchange/bitswap/message/pb",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "QL0AfaBfZyFAVRmRiet1b9Np7/Y=",
+			"path": "github.com/ipfs/go-ipfs/exchange/bitswap/network",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "W5Sf7Tyl6Nzy4NAfYs0lbBqN/dA=",
+			"path": "github.com/ipfs/go-ipfs/exchange/bitswap/notifications",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "r7r9w83NWGQAo+khZueUlSM2we0=",
+			"path": "github.com/ipfs/go-ipfs/exchange/bitswap/testnet",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "CeefsuEPeaB319KT2I1pzj457Oo=",
+			"path": "github.com/ipfs/go-ipfs/exchange/bitswap/wantlist",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "9I3zTqo1wgWoMd/xRZCfHtdbSZk=",
+			"path": "github.com/ipfs/go-ipfs/exchange/offline",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "dg9Jec74iWmsjUyQBCKjbe/k9DU=",
+			"path": "github.com/ipfs/go-ipfs/exchange/reprovide",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "XV4swF2I7XNJ8zw6oaHFkW/Zd7M=",
+			"path": "github.com/ipfs/go-ipfs/filestore",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "bkOiRBmPdFRWoErfWybBqSnDrjg=",
+			"path": "github.com/ipfs/go-ipfs/filestore/pb",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "D/SSDPTOrB7vGj18t1mhusqm9r8=",
+			"path": "github.com/ipfs/go-ipfs/flags",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "2bfYM/UrFfw8UEaW+PJ5l/wfRLA=",
+			"path": "github.com/ipfs/go-ipfs/fuse/ipns",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "tK6DObmAfutEeAwvY6HmQqXn8Ag=",
+			"path": "github.com/ipfs/go-ipfs/fuse/mount",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "F0sbGZBBnd+ZzAVUHRSVxRM/N28=",
+			"path": "github.com/ipfs/go-ipfs/fuse/node",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "rkJGNK5mDYAyGUweA9xEM/ehRf8=",
+			"path": "github.com/ipfs/go-ipfs/fuse/readonly",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "8Xc0cBMjj3CiwOKoMkyX5lifpy0=",
+			"path": "github.com/ipfs/go-ipfs/importer",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "kF2NrlKKVVP4Lm+/wOdIEDluDa8=",
+			"path": "github.com/ipfs/go-ipfs/importer/balanced",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "o/AyLUGJuoRvCg8Q98PD48EiYGs=",
+			"path": "github.com/ipfs/go-ipfs/importer/helpers",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "nvvss+7s8L4iVXe4Bi2fDFLOrg0=",
+			"path": "github.com/ipfs/go-ipfs/importer/trickle",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "fdJ0Iezr1tUSmgFePVFJzrBgdpY=",
+			"path": "github.com/ipfs/go-ipfs/keystore",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "W2Dw6MyLz7nedEPriD5VS4VVxxM=",
+			"path": "github.com/ipfs/go-ipfs/merkledag",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "f1pVnmp5IqR26BUK1lr2eXqVUsA=",
+			"path": "github.com/ipfs/go-ipfs/merkledag/pb",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "IC9nkj4CIE8XhK+u2dJOgqu0mUI=",
+			"path": "github.com/ipfs/go-ipfs/merkledag/test",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "gdWgRrw8RhtbMn5RM6BNwfwNUhc=",
+			"path": "github.com/ipfs/go-ipfs/merkledag/utils",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "cDfY5YajvxzCYN9g2XQvFXJ57YU=",
+			"path": "github.com/ipfs/go-ipfs/mfs",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "qQs3uC0px5lP+SmYbMTyn9PeAOw=",
+			"path": "github.com/ipfs/go-ipfs/namesys",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "p7M/DB3i5VCTJcegALUssE4VWmw=",
+			"path": "github.com/ipfs/go-ipfs/namesys/pb",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "5dLKphOhnDGCYffOt1YpmZqud5g=",
+			"path": "github.com/ipfs/go-ipfs/namesys/republisher",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "DXZIRPlXrEiRHQWw5iAFdUk9X1g=",
+			"path": "github.com/ipfs/go-ipfs/p2p",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "X5WUgDXzEz5Q7xIbhKgaygeWPEY=",
+			"path": "github.com/ipfs/go-ipfs/path",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "IR9IpDAX3j+tfObxKxUrSwIJtbs=",
+			"path": "github.com/ipfs/go-ipfs/pin",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "xvfbuQ+sSh3f5Sp50hW1Dy+oL7s=",
+			"path": "github.com/ipfs/go-ipfs/pin/gc",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "Xsooc4GXprpct6ZBuQIR5nG5VSA=",
+			"path": "github.com/ipfs/go-ipfs/pin/internal/pb",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "xrnwcfyuTxqazsVyb22nzQkwyQE=",
+			"path": "github.com/ipfs/go-ipfs/repo",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "LFuDUvtWu/oScfvP7TWfJgdGaYM=",
+			"path": "github.com/ipfs/go-ipfs/repo/common",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "E+0ZmDel7CxX0mv7UzXp5npDIIc=",
+			"path": "github.com/ipfs/go-ipfs/repo/config",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "QVPcO7dLwXeo5BB21i82YBDZfgA=",
+			"path": "github.com/ipfs/go-ipfs/repo/fsrepo",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "XnTGMnPtdocq2T+vOCtaB1Q5E6Q=",
+			"path": "github.com/ipfs/go-ipfs/repo/fsrepo/lock",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "nsvAUl755yvLydx/4GzT5kLTkzA=",
+			"path": "github.com/ipfs/go-ipfs/repo/fsrepo/migrations",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "9TMjiTEH4h26QGNq24vUj0R03xo=",
+			"path": "github.com/ipfs/go-ipfs/repo/fsrepo/serialize",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "Qc0siZqMMhUQ83XVSOebcXQ1GxM=",
+			"path": "github.com/ipfs/go-ipfs/routing/mock",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "XcHH3TARBTzXW6NlI/SadmiSt/0=",
+			"path": "github.com/ipfs/go-ipfs/routing/none",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "jVOmGaXjj7V580mqimsuXXH3cMU=",
+			"path": "github.com/ipfs/go-ipfs/routing/offline",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "2ejlSdW9Z/jL1L8mVdjkcQQNtxo=",
+			"path": "github.com/ipfs/go-ipfs/tar",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "0Op6/Le3FMwPhDE68Zxmeo3Bmgc=",
+			"path": "github.com/ipfs/go-ipfs/thirdparty/datastore2",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "faU4yBydf/CsYZGdenkmBW2YH6M=",
+			"path": "github.com/ipfs/go-ipfs/thirdparty/delay",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "uNl7Qv+WTiF3LMxcQcjm74beyIU=",
+			"path": "github.com/ipfs/go-ipfs/thirdparty/dir",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "lA8FKhT92pSxTfuMz2PJ0dXat/k=",
+			"path": "github.com/ipfs/go-ipfs/thirdparty/ds-help",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "0PQyTp4vVcxC78OZ0oAKAalVHDM=",
+			"path": "github.com/ipfs/go-ipfs/thirdparty/math2",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "utESml06CDoCgj9aR8zeScWG7z8=",
+			"path": "github.com/ipfs/go-ipfs/thirdparty/pq",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "AynReKEfCYhNOg/GztUIDFKQcUU=",
+			"path": "github.com/ipfs/go-ipfs/thirdparty/tar",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "+yGcma9L5HTZeiuGuk91DYWD9mQ=",
+			"path": "github.com/ipfs/go-ipfs/unixfs",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "9lUH0WSBA0scpgsOHznuiSogvhU=",
+			"path": "github.com/ipfs/go-ipfs/unixfs/archive",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "0TRzS1jPKguUjI7vNtc+C3x/Si4=",
+			"path": "github.com/ipfs/go-ipfs/unixfs/archive/tar",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "6iQM7XjFfK5wUJoO1fGIMAFtBiI=",
+			"path": "github.com/ipfs/go-ipfs/unixfs/hamt",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "oPLNrQK/XRzvmW1VrfY0Sxru5HU=",
+			"path": "github.com/ipfs/go-ipfs/unixfs/io",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "4FptwTdez+/XnOjHTvWvfcF1K7A=",
+			"path": "github.com/ipfs/go-ipfs/unixfs/mod",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		},
+		{
+			"checksumSHA1": "ciw9D3/z+wEkgi58lvNkBXHRgsk=",
+			"path": "github.com/ipfs/go-ipfs/unixfs/pb",
+			"revision": "eca0486e1a51fb9e22e8f63248739f63347aa073",
+			"revisionTime": "2018-02-09T17:54:23Z"
+		}
+	],
+	"rootPath": "github.com/jason860306/ipfs_demo"
+}
