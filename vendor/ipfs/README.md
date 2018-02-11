@@ -1,2 +1,0 @@
-# ipfs
-forked from OpenBazaar
