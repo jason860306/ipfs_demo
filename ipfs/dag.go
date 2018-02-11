@@ -6,6 +6,7 @@ import (
 	"github.com/ipfs/go-ipfs/merkledag"
 	"sync"
 	"time"
+	"gx/ipfs/QmNp85zy9RLrQ5oQD4hPyS39ezrrXpcaa7R4Y9kxdWQLLQ/go-cid"
 )
 
 // This function takes a Cid directory object and walks it returning each linked cid in the graph

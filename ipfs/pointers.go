@@ -19,7 +19,7 @@ import (
 	"time"
 
 	routing "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht"
-	"gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht/pb"
+	pb "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht/pb"
 	dhtpb "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht/pb"
 )
 
@@ -38,7 +38,7 @@ const (
    For offline messaging purposes we use a hash of the recipient's ID as the key and set the
    provider to the location of the ciphertext. We set the Peer ID of the provider object to
    a magic number so we distinguish it from regular providers and use a longer ttl.
-   Note this will only be compatible with the OpenBazaar/go-ipfs fork. */
+   Note this will only be compatible with the ipfs_demo/go-ipfs fork. */
 type Pointer struct {
 	Cid       *cid.Cid
 	Value     ps.PeerInfo

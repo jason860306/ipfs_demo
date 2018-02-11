@@ -219,7 +219,7 @@ func initializeIpnsKeyspace(repoRoot string, privKeyBytes []byte) error {
 		return err
 	}
 
-	return namesys.InitializeKeyspace(ctx /*, nd.DAG*/, nd.Namesys, nd.Pinning, nd.PrivateKey)
+	return namesys.InitializeKeyspace(ctx , nd.DAG, nd.Namesys, nd.Pinning, nd.PrivateKey)
 }
 
 func DoInit(repoRoot string, nBitsForKeypair int, password string, mnemonic string, creationDate time.Time) error {
@@ -256,7 +256,7 @@ func DoInit(repoRoot string, nBitsForKeypair int, password string, mnemonic stri
 		return err
 	}
 
-	log.Infof("Initializing OpenBazaar node at %s\n", repoRoot)
+	log.Infof("Initializing ipfs_demo node at %s\n", repoRoot)
 	if err := fsrepo.Init(repoRoot, conf); err != nil {
 		return err
 	}
@@ -307,7 +307,7 @@ func main() {
 			if err != nil {
 				os.Exit(1)
 			}
-			fmt.Printf("OpenBazaar repo initialized at %s\n", repoPath)
+			fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
 			os.Exit(1)
 		} else {
 			os.Exit(1)
@@ -315,6 +315,6 @@ func main() {
 	} else if err != nil {
 		os.Exit(1)
 	}
-	fmt.Printf("OpenBazaar repo initialized at %s\n", repoPath)
+	fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
 	os.Exit(1)
 }
