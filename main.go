@@ -1,17 +1,8 @@
 package main
 
 import (
-	"github.com/ipfs/go-ipfs/core"
-	"github.com/ipfs/go-ipfs/namesys"
-	"github.com/ipfs/go-ipfs/repo/config"
-	"github.com/ipfs/go-ipfs/repo/fsrepo"
-	"github.com/jason860306/ipfs_demo/ipfs"
-	"github.com/mitchellh/go-homedir"
-	"github.com/op/go-logging"
-	"github.com/tyler-smith/go-bip39"
 	"path/filepath"
-
-	"bufio"
+	//"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -19,6 +10,24 @@ import (
 	"path"
 	"strings"
 	"time"
+	"sort"
+
+	"github.com/ipfs/go-ipfs/core"
+	"github.com/ipfs/go-ipfs/namesys"
+	"github.com/ipfs/go-ipfs/repo/config"
+	"github.com/ipfs/go-ipfs/repo/fsrepo"
+	"github.com/ipfs/go-ipfs/commands"
+	"github.com/jason860306/ipfs_demo/ipfs"
+	"github.com/mitchellh/go-homedir"
+	"github.com/op/go-logging"
+	"github.com/tyler-smith/go-bip39"
+
+	dshelp "github.com/ipfs/go-ipfs/thirdparty/ds-help"
+
+	dhtutil "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht/util"
+	recpb "gx/ipfs/QmbxkgUceEcuSZ4ZdBA3x74VUDSSYjHYmmeEqkjxbtZ6Jg/go-libp2p-record/pb"
+	proto "gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
+	namepb "github.com/ipfs/go-ipfs/namesys/pb"
 )
 
 const RepoVersion = "6"
@@ -37,11 +46,11 @@ var DefaultBootstrapAddresses = []string{
    It depends on the OS and whether or not we are on testnet. */
 func GetRepoPath() (string, error) {
 	// Set default base path and directory name
-	path := "~"
+	homePath := "~"
 	directoryName := ".ipfs_demo"
 
 	// Join the path and directory name, then expand the home path
-	fullPath, err := homedir.Expand(filepath.Join(path, directoryName))
+	fullPath, err := homedir.Expand(filepath.Join(homePath, directoryName))
 	if err != nil {
 		return "", err
 	}
@@ -284,7 +293,21 @@ func InitializeRepo(dataDir, password, mnemonic string, creationDate time.Time) 
 	return DoInit(dataDir, 4096, password, mnemonic, creationDate)
 }
 
+// Prints the addresses of the host
+func printSwarmAddrs(node *core.IpfsNode) {
+	var addrs []string
+	for _, addr := range node.PeerHost.Addrs() {
+		addrs = append(addrs, addr.String())
+	}
+	sort.Sort(sort.StringSlice(addrs))
+
+	for _, addr := range addrs {
+		log.Infof("Swarm listening on %s\n", addr)
+	}
+}
+
 func main() {
+	//=========================================== Init ===========================================
 	// Set repo path
 	repoPath, err := GetRepoPath()
 	if err != nil {
@@ -297,24 +320,105 @@ func main() {
 	creationDate := time.Now()
 
 	err = InitializeRepo(repoPath, passwd, Mnemonic, creationDate)
-	if err == ErrRepoExists {
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Force overwriting the db will destroy your existing keys and history. Are you really, really sure you want to continue? (y/n): ")
-		resp, _ := reader.ReadString('\n')
-		if strings.ToLower(resp) == "y\n" || strings.ToLower(resp) == "yes\n" || strings.ToLower(resp)[:1] == "y" {
-			os.RemoveAll(repoPath)
-			err = InitializeRepo(repoPath, passwd, Mnemonic, creationDate)
-			if err != nil {
-				os.Exit(1)
-			}
-			fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
-			os.Exit(1)
-		} else {
-			os.Exit(1)
-		}
-	} else if err != nil {
+	//if err == ErrRepoExists {
+	//	reader := bufio.NewReader(os.Stdin)
+	//	fmt.Print("Force overwriting the db will destroy your existing keys and history. Are you really, really sure you want to continue? (y/n): ")
+	//	resp, _ := reader.ReadString('\n')
+	//	if strings.ToLower(resp) == "y\n" || strings.ToLower(resp) == "yes\n" || strings.ToLower(resp)[:1] == "y" {
+	//		os.RemoveAll(repoPath)
+	//		err = InitializeRepo(repoPath, passwd, Mnemonic, creationDate)
+	//		if err != nil {
+	//			os.Exit(1)
+	//		}
+	//		fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
+	//		os.Exit(1)
+	//	} else {
+	//		os.Exit(1)
+	//	}
+	//} else if err != nil {
+	//	os.Exit(1)
+	//}
+	fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
+
+	//=========================================== Start ===========================================
+	// IPFS node setup
+	r, err := fsrepo.Open(repoPath)
+	if err != nil {
+		log.Error(err)
 		os.Exit(1)
 	}
-	fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
+	cctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	cfg, err := r.Config()
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+
+	//identityKey, err := sqliteDB.Config().GetIdentityKey()
+	//if err != nil {
+	//	log.Error(err)
+	//	os.Exit(1)
+	//}
+	//identity, err := ipfs.IdentityFromKey(identityKey)
+	//if err != nil {
+	//	os.Exit(1)
+	//}
+	//cfg.Identity = identity
+
+	ncfg := &core.BuildCfg{
+		Repo:   r,
+		Online: true,
+		ExtraOpts: map[string]bool{
+			"mplex": true,
+		},
+		//DNSResolver: dnsResolver,
+		//Routing:     DHTOption,
+	}
+
+	nd, err := core.NewNode(cctx, ncfg)
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+
+	ctx := commands.Context{}
+	ctx.Online = true
+	ctx.ConfigRoot = repoPath
+	ctx.LoadConfig = func(path string) (*config.Config, error) {
+		return fsrepo.ConfigAt(repoPath)
+	}
+	ctx.ConstructNode = func() (*core.IpfsNode, error) {
+		return nd, nil
+	}
+
+	// Set IPNS query size
+	querySize := cfg.Ipns.QuerySize
+	if querySize <= 20 && querySize > 0 {
+		dhtutil.QuerySize = int(querySize)
+	} else {
+		dhtutil.QuerySize = 16
+	}
+	namesys.UsePersistentCache = cfg.Ipns.UsePersistentCache
+
+	log.Info("Peer ID: ", nd.Identity.Pretty())
+	printSwarmAddrs(nd)
+
+	// Get current directory root hash
+	_, ipnskey := namesys.IpnsKeysForID(nd.Identity)
+	ival, hasherr := nd.Repo.Datastore().Get(dshelp.NewKeyFromBinary([]byte(ipnskey)))
+	if hasherr != nil {
+		log.Error(hasherr)
+		os.Exit(1)
+	}
+	val := ival.([]byte)
+	dhtrec := new(recpb.Record)
+	proto.Unmarshal(val, dhtrec)
+	e := new(namepb.IpnsEntry)
+	proto.Unmarshal(dhtrec.GetValue(), e)
+
+	fmt.Printf("Daemon is ready\n")
+	//=========================================== End ===========================================
 	os.Exit(1)
 }
