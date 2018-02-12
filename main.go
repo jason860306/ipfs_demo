@@ -27,6 +27,7 @@ import (
 	recpb "gx/ipfs/QmbxkgUceEcuSZ4ZdBA3x74VUDSSYjHYmmeEqkjxbtZ6Jg/go-libp2p-record/pb"
 	proto "gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
 	namepb "github.com/ipfs/go-ipfs/namesys/pb"
+	"bufio"
 )
 
 const RepoVersion = "6"
@@ -442,16 +443,27 @@ func main() {
 	}
 
 	//=========================================== Swarm peers ===========================================
-	peers, err := ipfs.ConnectedPeers(ctx)
-	peerlen := len(peers)
-	if peerlen == 0 {
-		log.Infof("No peers in swarm")
-	} else {
-		for peer, i := range peers {
-			log.Infof("peer #%d: %s\n", i, peer)
-		}
+	for {
+		<-time.After(5 * time.Second)
+		go func() {
+			peers, err := ipfs.ConnectedPeers(ctx)
+			if err != nil {
+				log.Info(err.Error())
+				os.Exit(1)
+			}
+			peerlen := len(peers)
+			if peerlen == 0 {
+				log.Infof("No peers in swarm")
+			} else {
+				for i, peer := range peers {
+					log.Infof("peer #%d: %s\n", i, peer)
+				}
+			}
+		}()
 	}
 
 	//=========================================== End ===========================================
+	fmt.Print("Press 'Enter' to continue ...")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
 	os.Exit(1)
 }
