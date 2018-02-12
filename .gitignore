@@ -12,4 +12,4 @@
 *.out
 
 # project directory of goland
-.idea/*
+.idea/**
