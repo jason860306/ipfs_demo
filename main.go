@@ -2,7 +2,6 @@ package main
 
 import (
 	"path/filepath"
-	//"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -420,15 +419,37 @@ func main() {
 	ctx.ConstructNode = func() (*core.IpfsNode, error) {
 		return nd, nil
 	}
-	hash, err := ipfs.AddFile(ctx, path.Join("/home/szj0306", "Videos", "test.bin"))
+	hash, err := ipfs.AddFile(ctx, path.Join("./", "README.md"))
 	if err != nil {
 		log.Info(err.Error())
 		os.Exit(1)
 	}
-	if hash != "zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U" {
+	//test.bin: zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U
+	//README.md: zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9
+	if hash != "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9" {
 		log.Info("Ipfs add file failed")
 	} else {
 		log.Info("Ipfs add file successfully: ", hash)
+	}
+
+	//=========================================== Cat ===========================================
+	dataText, err := ipfs.Cat(ctx, hash, time.Second * 10)
+	if err != nil {
+		log.Info(err.Error())
+		os.Exit(1)
+	} else {
+		log.Infof("Cat %s as follow:\n%s", hash, dataText)
+	}
+
+	//=========================================== Swarm peers ===========================================
+	peers, err := ipfs.ConnectedPeers(ctx)
+	peerlen := len(peers)
+	if peerlen == 0 {
+		log.Infof("No peers in swarm")
+	} else {
+		for peer, i := range peers {
+			log.Infof("peer #%d: %s\n", i, peer)
+		}
 	}
 
 	//=========================================== End ===========================================
