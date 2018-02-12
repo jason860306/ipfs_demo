@@ -264,12 +264,12 @@ func DoInit(repoRoot string, nBitsForKeypair int, password string, mnemonic stri
 	if err != nil {
 		return err
 	}
+	conf.Identity = identity
 
 	log.Infof("Initializing ipfs_demo node at %s\n", repoRoot)
 	if err := fsrepo.Init(repoRoot, conf); err != nil {
 		return err
 	}
-	conf.Identity = identity
 
 	if err := addConfigExtensions(repoRoot); err != nil {
 		return err
@@ -320,24 +320,24 @@ func main() {
 	creationDate := time.Now()
 
 	err = InitializeRepo(repoPath, passwd, Mnemonic, creationDate)
-	//if err == ErrRepoExists {
-	//	reader := bufio.NewReader(os.Stdin)
-	//	fmt.Print("Force overwriting the db will destroy your existing keys and history. Are you really, really sure you want to continue? (y/n): ")
-	//	resp, _ := reader.ReadString('\n')
-	//	if strings.ToLower(resp) == "y\n" || strings.ToLower(resp) == "yes\n" || strings.ToLower(resp)[:1] == "y" {
-	//		os.RemoveAll(repoPath)
-	//		err = InitializeRepo(repoPath, passwd, Mnemonic, creationDate)
-	//		if err != nil {
-	//			os.Exit(1)
-	//		}
-	//		fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
-	//		os.Exit(1)
-	//	} else {
-	//		os.Exit(1)
-	//	}
-	//} else if err != nil {
-	//	os.Exit(1)
-	//}
+	if err == ErrRepoExists {
+		//reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Force overwriting the db will destroy your existing keys and history. Are you really, really sure you want to continue? (y/n): ")
+		//resp, _ := reader.ReadString('\n')
+		resp := "yes\n"
+		if strings.ToLower(resp) == "y\n" || strings.ToLower(resp) == "yes\n" || strings.ToLower(resp)[:1] == "y" {
+			os.RemoveAll(repoPath)
+			err = InitializeRepo(repoPath, passwd, Mnemonic, creationDate)
+			if err != nil {
+				os.Exit(1)
+			}
+			fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
+		} else {
+			os.Exit(1)
+		}
+	} else if err != nil {
+		os.Exit(1)
+	}
 	fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
 
 	//=========================================== Start ===========================================
@@ -383,16 +383,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	ctx := commands.Context{}
-	ctx.Online = true
-	ctx.ConfigRoot = repoPath
-	ctx.LoadConfig = func(path string) (*config.Config, error) {
-		return fsrepo.ConfigAt(repoPath)
-	}
-	ctx.ConstructNode = func() (*core.IpfsNode, error) {
-		return nd, nil
-	}
-
 	// Set IPNS query size
 	querySize := cfg.Ipns.QuerySize
 	if querySize <= 20 && querySize > 0 {
@@ -419,6 +409,28 @@ func main() {
 	proto.Unmarshal(dhtrec.GetValue(), e)
 
 	fmt.Printf("Daemon is ready\n")
+	//=========================================== Add ===========================================
+
+	ctx := commands.Context{}
+	ctx.Online = true
+	ctx.ConfigRoot = repoPath
+	ctx.LoadConfig = func(path string) (*config.Config, error) {
+		return fsrepo.ConfigAt(repoPath)
+	}
+	ctx.ConstructNode = func() (*core.IpfsNode, error) {
+		return nd, nil
+	}
+	hash, err := ipfs.AddFile(ctx, path.Join("/home/szj0306", "Videos", "test.bin"))
+	if err != nil {
+		log.Info(err.Error())
+		os.Exit(1)
+	}
+	if hash != "zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U" {
+		log.Info("Ipfs add file failed")
+	} else {
+		log.Info("Ipfs add file successfully: ", hash)
+	}
+
 	//=========================================== End ===========================================
 	os.Exit(1)
 }
