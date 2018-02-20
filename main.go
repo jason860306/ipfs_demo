@@ -30,10 +30,10 @@ import (
 	"bufio"
 )
 
-const RepoVersion = "6"
+const RepoVersion = "6"	// version
 
 var log = logging.MustGetLogger("ipfs_demo")
-var ErrRepoExists = errors.New("IPFS configuration file exists. Reinitializing would overwrite your keys. Use -f to force overwrite.")
+var ErrRepoExists = errors.New("IPFS configuration file exists. Reinitializing would overwrite your keys. Use -f to force overwrite.")	// error message
 
 var DefaultBootstrapAddresses = []string{
 	"/ip4/107.170.133.32/tcp/4001/ipfs/QmUZRGLhcKXF1JyuaHgKm23LvqcoMYwtb9jmh8CkP4og3K", // Le Marché Serpette
@@ -148,10 +148,12 @@ func InitConfig(repoRoot string) (*config.Config, error) {
 
 		Datastore: datastore,
 		Bootstrap: config.BootstrapPeerStrings(bootstrapPeers),
-		Discovery: config.Discovery{config.MDNS{
-			Enabled:  false,
-			Interval: 10,
-		}},
+		Discovery: config.Discovery{
+			config.MDNS{
+				Enabled:  false,
+				Interval: 10,
+			},
+		},
 
 		// Setup the node mount points
 		Mounts: config.Mounts{
@@ -426,8 +428,9 @@ func main() {
 		os.Exit(1)
 	}
 	//test.bin: zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U
-	//README.md: zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9
-	if hash != "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9" {
+	//README.md on linux:   zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9
+	//README.md on windows: zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo
+	if hash != "zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo" {
 		log.Info("Ipfs add file failed")
 	} else {
 		log.Info("Ipfs add file successfully: ", hash)
@@ -443,23 +446,55 @@ func main() {
 	}
 
 	//=========================================== Swarm peers ===========================================
-	for {
-		<-time.After(5 * time.Second)
+	for i := 0; i < 3; i++ {
+		<-time.After(2 * time.Second)
+
+		pbool := make(chan []string)
 		go func() {
 			peers, err := ipfs.ConnectedPeers(ctx)
 			if err != nil {
+				errInfo := make([]string, 1)
+				errInfo = append(errInfo, err.Error())
+				pbool <- errInfo
 				log.Info(err.Error())
-				os.Exit(1)
 			}
-			peerlen := len(peers)
-			if peerlen == 0 {
-				log.Infof("No peers in swarm")
+			pbool <- peers
+		}()
+		peers := <- pbool
+		if len(peers) == 0 {
+			log.Infof("No peers in swarm")
+		} else {
+			for i, peer := range peers {
+				log.Infof("peer #%d: %s\n", i, peer)
+			}
+			break
+		}
+	}
+
+	//=========================================== Get ===========================================
+	for i := 0; i < 3; i++ {
+		<-time.After(2 * time.Second)
+
+		bbool := make(chan []byte)
+		cbool := make(chan bool)
+		go func() {
+			dataText, err = ipfs.Get(ctx, hash, time.Second * 10)
+			if err != nil {
+				cbool <- false
+				bbool <- []byte(err.Error())
+				log.Info(err.Error())
 			} else {
-				for i, peer := range peers {
-					log.Infof("peer #%d: %s\n", i, peer)
-				}
+				cbool <- true
+				bbool <- dataText
+				log.Infof("Get %s Ok!", hash)
 			}
 		}()
+		dataText := <- bbool
+		getOk := <- cbool
+		if getOk {
+			log.Infof("%s", dataText)
+			break
+		}
 	}
 
 	//=========================================== End ===========================================
