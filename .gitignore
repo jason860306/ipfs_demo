@@ -13,3 +13,4 @@
 
 # project directory of goland
 .idea/**
+.vscode/**
