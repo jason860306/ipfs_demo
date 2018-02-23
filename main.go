@@ -26,6 +26,8 @@ import (
 
 	"github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
 	namepb "github.com/ipfs/go-ipfs/namesys/pb"
+	"github.com/op/go-logging"
+	"github.com/tyler-smith/go-bip39"
 )
 
 const RepoVersion = "6" // version
@@ -472,6 +474,18 @@ func main() {
 			}
 			break
 		}
+	}
+
+	//=========================================== Connect peers ===========================================
+	peer := "/ip4/192.168.0.108/tcp/4001/ipfs/QmXtnUAnkG6evE2R9Qi5HMwkU81dAmb6RMKaqyrNRF1XWH"
+	peers, err := ipfs.ConnectTo(ctx, peer)
+	if err != nil {
+		log.Info(err.Error())
+		os.Exit(1)
+	}
+	log.Infof("connect %s successfully\n", peer)
+	for i, peer := range peers {
+		log.Infof("#%d: %s\n", i, peer)
 	}
 
 	//=========================================== Get ===========================================

@@ -1,9 +1,17 @@
 package ipfs
 
-import "github.com/ipfs/go-ipfs/commands"
+import (
+	"github.com/ipfs/go-ipfs/commands"
+	//ma "gx/ipfs/QmXY77cVe7rVRQXZZQRioukUM7aRW3BTcAgJe12MCtb3Ji/go-multiaddr"
+)
 
-func ConnectTo(ctx commands.Context) ([]string, error) {
+type stringList struct {
+	Strings []string
+}
+
+func ConnectTo(ctx commands.Context, peerAddr string) ([]string, error) {
 	args := []string{"swarm", "connect"}
+	args = append(args, peerAddr)
 	req, cmd, err := NewRequest(ctx, args)
 	if err != nil {
 		return nil, err
@@ -13,5 +21,15 @@ func ConnectTo(ctx commands.Context) ([]string, error) {
 	if res.Error() != nil {
 		return nil, res.Error()
 	}
-	return *res.Output().(*[]string), nil
+
+	//expectedType := reflect.TypeOf(cmd.Type)
+	//var respStrLst expectedType
+	//for _, s := range list.Strings {
+	//	respStrLst = append(respStrLst, s)
+	//}
+	//return respStrLst, nil
+	//return res.Output().(*stringList).Strings, nil
+	var strLst []string
+	strLst = append(strLst, "ajwefkwjelfk")
+	return strLst, nil
 }
