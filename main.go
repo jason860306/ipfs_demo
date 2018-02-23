@@ -1,39 +1,37 @@
 package main
 
 import (
-	"path/filepath"
 	"context"
 	"errors"
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
+	"sort"
 	"strings"
 	"time"
-	"sort"
 
+	"github.com/ipfs/go-ipfs/commands"
 	"github.com/ipfs/go-ipfs/core"
 	"github.com/ipfs/go-ipfs/namesys"
 	"github.com/ipfs/go-ipfs/repo/config"
 	"github.com/ipfs/go-ipfs/repo/fsrepo"
-	"github.com/ipfs/go-ipfs/commands"
+	"github.com/ipfs/go-ipfs/thirdparty/ds-help"
 	"github.com/jason860306/ipfs_demo/ipfs"
-	"github.com/mitchellh/go-homedir"
-	"github.com/op/go-logging"
-	"github.com/tyler-smith/go-bip39"
 
-	dshelp "github.com/ipfs/go-ipfs/thirdparty/ds-help"
-
-	dhtutil "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht/util"
-	recpb "gx/ipfs/QmbxkgUceEcuSZ4ZdBA3x74VUDSSYjHYmmeEqkjxbtZ6Jg/go-libp2p-record/pb"
-	proto "gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
-	namepb "github.com/ipfs/go-ipfs/namesys/pb"
 	"bufio"
+	dhtutil "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht/util"
+	"gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
+	recpb "gx/ipfs/QmbxkgUceEcuSZ4ZdBA3x74VUDSSYjHYmmeEqkjxbtZ6Jg/go-libp2p-record/pb"
+
+	"github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
+	namepb "github.com/ipfs/go-ipfs/namesys/pb"
 )
 
-const RepoVersion = "6"	// version
+const RepoVersion = "6" // version
 
 var log = logging.MustGetLogger("ipfs_demo")
-var ErrRepoExists = errors.New("IPFS configuration file exists. Reinitializing would overwrite your keys. Use -f to force overwrite.")	// error message
+var ErrRepoExists = errors.New("IPFS configuration file exists. Reinitializing would overwrite your keys. Use -f to force overwrite.") // error message
 
 var DefaultBootstrapAddresses = []string{
 	"/ip4/107.170.133.32/tcp/4001/ipfs/QmUZRGLhcKXF1JyuaHgKm23LvqcoMYwtb9jmh8CkP4og3K", // Le Marché Serpette
@@ -194,10 +192,7 @@ func addConfigExtensions(repoRoot string) error {
 	if err != nil { // NB: repo is owned by the node
 		return err
 	}
-	if err := r.Close(); err != nil {
-		return err
-	}
-	return nil
+	return r.Close()
 }
 
 func initializeIpnsKeyspace(repoRoot string, privKeyBytes []byte) error {
@@ -230,7 +225,7 @@ func initializeIpnsKeyspace(repoRoot string, privKeyBytes []byte) error {
 		return err
 	}
 
-	return namesys.InitializeKeyspace(ctx , nd.DAG, nd.Namesys, nd.Pinning, nd.PrivateKey)
+	return namesys.InitializeKeyspace(ctx, nd.DAG, nd.Namesys, nd.Pinning, nd.PrivateKey)
 }
 
 func DoInit(repoRoot string, nBitsForKeypair int, password string, mnemonic string, creationDate time.Time) error {
@@ -318,7 +313,15 @@ func main() {
 	fmt.Println(repoPath)
 
 	passwd := strings.Replace("123456", "'", "''", -1)
-	Mnemonic := "ipfs_demo"
+	//Mnemonic := func() string {
+	//	t := time.Now()
+	//	h := md5.New()
+	//	io.WriteString(h, "ipfs_demo")
+	//	io.WriteString(h, t.String())
+	//	passwd := fmt.Sprintf("%x", h.Sum(nil))
+	//	return passwd
+	//}()
+	Mnemonic := ""
 	creationDate := time.Now()
 
 	err = InitializeRepo(repoPath, passwd, Mnemonic, creationDate)
@@ -437,7 +440,7 @@ func main() {
 	}
 
 	//=========================================== Cat ===========================================
-	dataText, err := ipfs.Cat(ctx, hash, time.Second * 10)
+	dataText, err := ipfs.Cat(ctx, hash, time.Second*10)
 	if err != nil {
 		log.Info(err.Error())
 		os.Exit(1)
@@ -460,7 +463,7 @@ func main() {
 			}
 			pbool <- peers
 		}()
-		peers := <- pbool
+		peers := <-pbool
 		if len(peers) == 0 {
 			log.Infof("No peers in swarm")
 		} else {
@@ -475,24 +478,24 @@ func main() {
 	for i := 0; i < 3; i++ {
 		<-time.After(2 * time.Second)
 
-		bbool := make(chan []byte)
-		cbool := make(chan bool)
-		go func() {
-			dataText, err = ipfs.Get(ctx, hash, time.Second * 10)
-			if err != nil {
-				cbool <- false
-				bbool <- []byte(err.Error())
-				log.Info(err.Error())
-			} else {
-				cbool <- true
-				bbool <- dataText
-				log.Infof("Get %s Ok!", hash)
-			}
-		}()
-		dataText := <- bbool
-		getOk := <- cbool
-		if getOk {
-			log.Infof("%s", dataText)
+		// bbool := make(chan []byte)
+		// cbool := make(chan bool)
+		// go func() {
+		d, err := ipfs.Get(ctx, hash, time.Second*10)
+		if err != nil {
+			// cbool <- false
+			// bbool <- []byte(err.Error())
+			log.Info(err.Error())
+		} else {
+			// cbool <- true
+			// bbool <- d
+			log.Infof("Get %s Ok!", hash)
+		}
+		// }()
+		// d := <-bbool
+		// getOk := <-cbool
+		if /*getOk*/ len(d) != 0 {
+			log.Infof("%s", d)
 			break
 		}
 	}
