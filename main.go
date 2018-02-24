@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -14,20 +15,24 @@ import (
 	"github.com/ipfs/go-ipfs/commands"
 	"github.com/ipfs/go-ipfs/core"
 	"github.com/ipfs/go-ipfs/namesys"
+	namepb "github.com/ipfs/go-ipfs/namesys/pb"
+	ipfsrepo "github.com/ipfs/go-ipfs/repo"
 	"github.com/ipfs/go-ipfs/repo/config"
 	"github.com/ipfs/go-ipfs/repo/fsrepo"
 	"github.com/ipfs/go-ipfs/thirdparty/ds-help"
+	"github.com/op/go-logging"
+	"github.com/tyler-smith/go-bip39"
+
 	"github.com/jason860306/ipfs_demo/ipfs"
 
-	"bufio"
 	dhtutil "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht/util"
 	"gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
 	recpb "gx/ipfs/QmbxkgUceEcuSZ4ZdBA3x74VUDSSYjHYmmeEqkjxbtZ6Jg/go-libp2p-record/pb"
 
 	"github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
-	namepb "github.com/ipfs/go-ipfs/namesys/pb"
-	"github.com/op/go-logging"
-	"github.com/tyler-smith/go-bip39"
+	"gx/ipfs/QmPR2JzfKd9poHx9XBhzoFeBBC31ZM3W5iUPKJZWyaoZZm/go-libp2p-routing"
+	"gx/ipfs/QmT7PnPxYkeKPCG8pAnucfcjrXc15Q7FgvFv7YC24EPrw8/go-libp2p-kad-dht"
+	p2phost "gx/ipfs/QmaSxYRuMq4pkpBBG2CYaRrPx2z7NmMVEs34b9g61biQA6/go-libp2p-host"
 )
 
 const RepoVersion = "6" // version
@@ -148,12 +153,10 @@ func InitConfig(repoRoot string) (*config.Config, error) {
 
 		Datastore: datastore,
 		Bootstrap: config.BootstrapPeerStrings(bootstrapPeers),
-		Discovery: config.Discovery{
-			config.MDNS{
-				Enabled:  false,
-				Interval: 10,
-			},
-		},
+		Discovery: config.Discovery{config.MDNS{
+			Enabled:  true,
+			Interval: 10,
+		}},
 
 		// Setup the node mount points
 		Mounts: config.Mounts{
@@ -305,6 +308,15 @@ func printSwarmAddrs(node *core.IpfsNode) {
 	}
 }
 
+var DHTOption core.RoutingOption = constructDHTRouting
+
+func constructDHTRouting(ctx context.Context, host p2phost.Host, dstore ipfsrepo.Datastore) (routing.IpfsRouting, error) {
+	dhtRouting := dht.NewDHT(ctx, host, dstore)
+	dhtRouting.Validator[core.IpnsValidatorTag] = namesys.IpnsRecordValidator
+	dhtRouting.Selector[core.IpnsValidatorTag] = namesys.IpnsSelectorFunc
+	return dhtRouting, nil
+}
+
 func main() {
 	//=========================================== Init ===========================================
 	// Set repo path
@@ -315,14 +327,6 @@ func main() {
 	fmt.Println(repoPath)
 
 	passwd := strings.Replace("123456", "'", "''", -1)
-	//Mnemonic := func() string {
-	//	t := time.Now()
-	//	h := md5.New()
-	//	io.WriteString(h, "ipfs_demo")
-	//	io.WriteString(h, t.String())
-	//	passwd := fmt.Sprintf("%x", h.Sum(nil))
-	//	return passwd
-	//}()
 	Mnemonic := ""
 	creationDate := time.Now()
 
@@ -381,7 +385,7 @@ func main() {
 			"mplex": true,
 		},
 		//DNSResolver: dnsResolver,
-		//Routing:     DHTOption,
+		Routing: DHTOption,
 	}
 
 	nd, err := core.NewNode(cctx, ncfg)
@@ -389,6 +393,7 @@ func main() {
 		log.Error(err)
 		os.Exit(1)
 	}
+	nd.SetLocal(false)
 
 	// Set IPNS query size
 	querySize := cfg.Ipns.QuerySize
@@ -441,7 +446,20 @@ func main() {
 		log.Info("Ipfs add file successfully: ", hash)
 	}
 
+	//=========================================== Connect peers ===========================================
+	peer := "/ip4/138.68.52.240/tcp/4001/ipfs/Qmc42SeXyehX6AdGdMNiC7LEU2FezykDcgbptyoNw5f6TZ"
+	peers, err := ipfs.ConnectTo(ctx, peer)
+	if err != nil {
+		log.Info(err.Error())
+		os.Exit(1)
+	}
+	log.Infof("connect %s successfully\n", peer)
+	for i, peer := range peers {
+		log.Infof("#%d: %s\n", i, peer)
+	}
+
 	//=========================================== Cat ===========================================
+	hash = "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9"
 	dataText, err := ipfs.Cat(ctx, hash, time.Second*10)
 	if err != nil {
 		log.Info(err.Error())
@@ -451,7 +469,7 @@ func main() {
 	}
 
 	//=========================================== Swarm peers ===========================================
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 10; i++ {
 		<-time.After(2 * time.Second)
 
 		pbool := make(chan []string)
@@ -472,24 +490,12 @@ func main() {
 			for i, peer := range peers {
 				log.Infof("peer #%d: %s\n", i, peer)
 			}
-			break
+			//break
 		}
 	}
 
-	//=========================================== Connect peers ===========================================
-	peer := "/ip4/192.168.0.108/tcp/4001/ipfs/QmXtnUAnkG6evE2R9Qi5HMwkU81dAmb6RMKaqyrNRF1XWH"
-	peers, err := ipfs.ConnectTo(ctx, peer)
-	if err != nil {
-		log.Info(err.Error())
-		os.Exit(1)
-	}
-	log.Infof("connect %s successfully\n", peer)
-	for i, peer := range peers {
-		log.Infof("#%d: %s\n", i, peer)
-	}
-
 	//=========================================== Get ===========================================
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 10; i++ {
 		<-time.After(2 * time.Second)
 
 		// bbool := make(chan []byte)
@@ -510,7 +516,7 @@ func main() {
 		// getOk := <-cbool
 		if /*getOk*/ len(d) != 0 {
 			log.Infof("%s", d)
-			break
+			//break
 		}
 	}
 
