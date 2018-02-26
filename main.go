@@ -432,45 +432,45 @@ func main() {
 	ctx.ConstructNode = func() (*core.IpfsNode, error) {
 		return nd, nil
 	}
-	hash, err := ipfs.AddFile(ctx, path.Join("./", "README.md"))
-	if err != nil {
-		log.Info(err.Error())
-		os.Exit(1)
-	}
-	//test.bin: zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U
-	//README.md on linux:   zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9
-	//README.md on windows: zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo
-	if hash != "zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo" {
-		log.Info("Ipfs add file failed")
-	} else {
-		log.Info("Ipfs add file successfully: ", hash)
-	}
+	//hash, err := ipfs.AddFile(ctx, path.Join("./", "README.md"))
+	//if err != nil {
+	//	log.Info(err.Error())
+	//	os.Exit(1)
+	//}
+	////test.bin: zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U
+	////README.md on linux:   zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9
+	////README.md on windows: zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo
+	//if hash != "zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo" {
+	//	log.Info("Ipfs add file failed")
+	//} else {
+	//	log.Info("Ipfs add file successfully: ", hash)
+	//}
 
 	//=========================================== Connect peers ===========================================
-	peer := "/ip4/138.68.52.240/tcp/4001/ipfs/Qmc42SeXyehX6AdGdMNiC7LEU2FezykDcgbptyoNw5f6TZ"
-	peers, err := ipfs.ConnectTo(ctx, peer)
-	if err != nil {
-		log.Info(err.Error())
-		os.Exit(1)
-	}
-	log.Infof("connect %s successfully\n", peer)
-	for i, peer := range peers {
-		log.Infof("#%d: %s\n", i, peer)
-	}
+	//peer := "/ip4/138.68.52.240/tcp/4001/ipfs/QmNjcgti3Y4Cbh4XBng8ACidsitt4m2iVoWhNBNpNdwfJm"
+	//peers, err := ipfs.ConnectTo(ctx, peer)
+	//if err != nil {
+	//	log.Info(err.Error())
+	//	os.Exit(1)
+	//}
+	//log.Infof("connect %s successfully\n", peer)
+	//for i, peer := range peers {
+	//	log.Infof("#%d: %s\n", i, peer)
+	//}
 
 	//=========================================== Cat ===========================================
-	hash = "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9"
-	dataText, err := ipfs.Cat(ctx, hash, time.Second*10)
+	file_hash := "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9"
+	dataText, err := ipfs.Cat(ctx, file_hash, time.Second*1000)
 	if err != nil {
 		log.Info(err.Error())
 		os.Exit(1)
 	} else {
-		log.Infof("Cat %s as follow:\n%s", hash, dataText)
+		log.Infof("Cat %s as follow:\n%s", file_hash, dataText)
 	}
 
 	//=========================================== Swarm peers ===========================================
 	for i := 0; i < 10; i++ {
-		<-time.After(2 * time.Second)
+		<-time.After(1 * time.Second)
 
 		pbool := make(chan []string)
 		go func() {
@@ -496,12 +496,12 @@ func main() {
 
 	//=========================================== Get ===========================================
 	for i := 0; i < 10; i++ {
-		<-time.After(2 * time.Second)
+		<-time.After(1 * time.Second)
 
 		// bbool := make(chan []byte)
 		// cbool := make(chan bool)
 		// go func() {
-		d, err := ipfs.Get(ctx, hash, time.Second*10)
+		d, err := ipfs.Get(ctx, file_hash, time.Second*10)
 		if err != nil {
 			// cbool <- false
 			// bbool <- []byte(err.Error())
@@ -509,7 +509,7 @@ func main() {
 		} else {
 			// cbool <- true
 			// bbool <- d
-			log.Infof("Get %s Ok!", hash)
+			log.Infof("Get %s Ok!", file_hash)
 		}
 		// }()
 		// d := <-bbool
