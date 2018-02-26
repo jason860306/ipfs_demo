@@ -29,12 +29,12 @@ import (
 	"gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
 	recpb "gx/ipfs/QmbxkgUceEcuSZ4ZdBA3x74VUDSSYjHYmmeEqkjxbtZ6Jg/go-libp2p-record/pb"
 
+	"bytes"
 	"github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
 	"gx/ipfs/QmPR2JzfKd9poHx9XBhzoFeBBC31ZM3W5iUPKJZWyaoZZm/go-libp2p-routing"
 	"gx/ipfs/QmT7PnPxYkeKPCG8pAnucfcjrXc15Q7FgvFv7YC24EPrw8/go-libp2p-kad-dht"
 	p2phost "gx/ipfs/QmaSxYRuMq4pkpBBG2CYaRrPx2z7NmMVEs34b9g61biQA6/go-libp2p-host"
 	"strconv"
-	"bytes"
 )
 
 const RepoVersion = "6" // version
@@ -387,7 +387,7 @@ func main() {
 			"mplex": true,
 		},
 		DNSResolver: namesys.NewDNSResolver(),
-		Routing: DHTOption,
+		Routing:     DHTOption,
 	}
 
 	nd, err := core.NewNode(cctx, ncfg)
@@ -408,12 +408,12 @@ func main() {
 	}
 
 	//=========================================== Set ipfs log level ===========================================
-	logmsg, logerr := ipfs.Log(ctx, "all", "debug")
-	if logerr != nil {
-		log.Error(logerr.Error())
-	} else {
-		log.Info(logmsg)
-	}
+	//logmsg, logerr := ipfs.Log(ctx, "all", "warning")
+	//if logerr != nil {
+	//	log.Error(logerr.Error())
+	//} else {
+	//	log.Info(logmsg)
+	//}
 
 	// Set IPNS query size
 	querySize := cfg.Ipns.QuerySize
@@ -529,13 +529,13 @@ func main() {
 			// cbool <- false
 			// bbool <- []byte(err.Error())
 			log.Info(err.Error())
-		} else if string(d[:]) == file_hash {
+		} else /*if string(d[:]) == file_hash*/ {
 			// cbool <- true
 			// bbool <- d
-			log.Infof("Get %s Ok!", file_hash)
-		} else {
-			log.Info("Get %s Failed!", file_hash)
-		}
+			log.Infof("Get %s Ok!", d)
+		} /*else {
+			log.Infof("Get %s Failed!", file_hash)
+		}*/
 		// }()
 		// d := <-bbool
 		// getOk := <-cbool
