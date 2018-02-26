@@ -90,7 +90,6 @@ may also specify the level of compression by specifying '-l=<1-9>'.
 			res.SetError(fmt.Errorf("'ipfs get' only supports unixfs nodes"), cmds.ErrNormal)
 			return
 		}
-		fmt.Printf("%s\n", dn.RawData())
 
 		archive, _, _ := req.Option("archive").Bool()
 		reader, err := uarchive.DagArchive(ctx, dn, p.String(), node.DAG, archive, cmplvl)

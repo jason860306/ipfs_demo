@@ -6,8 +6,8 @@ import (
 	"github.com/ipfs/go-ipfs/commands"
 )
 
-func Get(ctx commands.Context, hash string, timeout time.Duration) ([]byte, error) {
-	args := []string{"get", hash}
+func Get(ctx commands.Context, hash string, ofpath string, timeout time.Duration) ([]byte, error) {
+	args := []string{"get", hash, "-o", ofpath}
 	req, cmd, err := NewRequestWithTimeout(ctx, args, timeout)
 	if err != nil {
 		return nil, err

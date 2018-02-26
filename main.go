@@ -33,6 +33,8 @@ import (
 	"gx/ipfs/QmPR2JzfKd9poHx9XBhzoFeBBC31ZM3W5iUPKJZWyaoZZm/go-libp2p-routing"
 	"gx/ipfs/QmT7PnPxYkeKPCG8pAnucfcjrXc15Q7FgvFv7YC24EPrw8/go-libp2p-kad-dht"
 	p2phost "gx/ipfs/QmaSxYRuMq4pkpBBG2CYaRrPx2z7NmMVEs34b9g61biQA6/go-libp2p-host"
+	"strconv"
+	"bytes"
 )
 
 const RepoVersion = "6" // version
@@ -384,7 +386,7 @@ func main() {
 		ExtraOpts: map[string]bool{
 			"mplex": true,
 		},
-		//DNSResolver: dnsResolver,
+		DNSResolver: namesys.NewDNSResolver(),
 		Routing: DHTOption,
 	}
 
@@ -394,6 +396,24 @@ func main() {
 		os.Exit(1)
 	}
 	nd.SetLocal(false)
+
+	ctx := commands.Context{}
+	ctx.Online = true
+	ctx.ConfigRoot = repoPath
+	ctx.LoadConfig = func(path string) (*config.Config, error) {
+		return fsrepo.ConfigAt(repoPath)
+	}
+	ctx.ConstructNode = func() (*core.IpfsNode, error) {
+		return nd, nil
+	}
+
+	//=========================================== Set ipfs log level ===========================================
+	logmsg, logerr := ipfs.Log(ctx, "all", "debug")
+	if logerr != nil {
+		log.Error(logerr.Error())
+	} else {
+		log.Info(logmsg)
+	}
 
 	// Set IPNS query size
 	querySize := cfg.Ipns.QuerySize
@@ -421,17 +441,8 @@ func main() {
 	proto.Unmarshal(dhtrec.GetValue(), e)
 
 	fmt.Printf("Daemon is ready\n")
-	//=========================================== Add ===========================================
 
-	ctx := commands.Context{}
-	ctx.Online = true
-	ctx.ConfigRoot = repoPath
-	ctx.LoadConfig = func(path string) (*config.Config, error) {
-		return fsrepo.ConfigAt(repoPath)
-	}
-	ctx.ConstructNode = func() (*core.IpfsNode, error) {
-		return nd, nil
-	}
+	//=========================================== Add ===========================================
 	//hash, err := ipfs.AddFile(ctx, path.Join("./", "README.md"))
 	//if err != nil {
 	//	log.Info(err.Error())
@@ -446,19 +457,19 @@ func main() {
 	//	log.Info("Ipfs add file successfully: ", hash)
 	//}
 
-	//=========================================== Connect peers ===========================================
-	//peer := "/ip4/138.68.52.240/tcp/4001/ipfs/QmNjcgti3Y4Cbh4XBng8ACidsitt4m2iVoWhNBNpNdwfJm"
-	//peers, err := ipfs.ConnectTo(ctx, peer)
-	//if err != nil {
-	//	log.Info(err.Error())
-	//	os.Exit(1)
-	//}
-	//log.Infof("connect %s successfully\n", peer)
-	//for i, peer := range peers {
-	//	log.Infof("#%d: %s\n", i, peer)
-	//}
+	// =========================================== Connect peers ===========================================
+	peer := "/ip4/138.68.52.240/tcp/4001/ipfs/QmNjcgti3Y4Cbh4XBng8ACidsitt4m2iVoWhNBNpNdwfJm"
+	peers, err := ipfs.ConnectTo(ctx, peer)
+	if err != nil {
+		log.Info(err.Error())
+		//os.Exit(1)
+	}
+	log.Infof("connect %s successfully\n", peer)
+	for i, peer := range peers {
+		log.Infof("#%d: %s\n", i, peer)
+	}
 
-	//=========================================== Cat ===========================================
+	////=========================================== Cat ===========================================
 	file_hash := "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9"
 	dataText, err := ipfs.Cat(ctx, file_hash, time.Second*1000)
 	if err != nil {
@@ -501,23 +512,37 @@ func main() {
 		// bbool := make(chan []byte)
 		// cbool := make(chan bool)
 		// go func() {
-		d, err := ipfs.Get(ctx, file_hash, time.Second*10)
+		home, herr := homedir.Dir()
+		if herr != nil {
+			log.Error(herr.Error())
+			os.Exit(1)
+		}
+
+		var fnamebuf bytes.Buffer
+		fnamebuf.WriteString(file_hash)
+		fnamebuf.WriteString("_")
+		fnamebuf.WriteString(strconv.Itoa(i))
+
+		ofpath := filepath.Join(home, fnamebuf.String())
+		d, err := ipfs.Get(ctx, file_hash, ofpath, time.Second*10)
 		if err != nil {
 			// cbool <- false
 			// bbool <- []byte(err.Error())
 			log.Info(err.Error())
-		} else {
+		} else if string(d[:]) == file_hash {
 			// cbool <- true
 			// bbool <- d
 			log.Infof("Get %s Ok!", file_hash)
+		} else {
+			log.Info("Get %s Failed!", file_hash)
 		}
 		// }()
 		// d := <-bbool
 		// getOk := <-cbool
-		if /*getOk*/ len(d) != 0 {
-			log.Infof("%s", d)
-			//break
-		}
+		//if /*getOk*/ len(d) != 0 {
+		//	log.Infof("%s", d)
+		//	//break
+		//}
 	}
 
 	//=========================================== End ===========================================
