@@ -8,7 +8,9 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -30,11 +32,11 @@ import (
 	recpb "gx/ipfs/QmbxkgUceEcuSZ4ZdBA3x74VUDSSYjHYmmeEqkjxbtZ6Jg/go-libp2p-record/pb"
 
 	"bytes"
+	"flag"
 	"github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
 	"gx/ipfs/QmPR2JzfKd9poHx9XBhzoFeBBC31ZM3W5iUPKJZWyaoZZm/go-libp2p-routing"
 	"gx/ipfs/QmT7PnPxYkeKPCG8pAnucfcjrXc15Q7FgvFv7YC24EPrw8/go-libp2p-kad-dht"
 	p2phost "gx/ipfs/QmaSxYRuMq4pkpBBG2CYaRrPx2z7NmMVEs34b9g61biQA6/go-libp2p-host"
-	"strconv"
 )
 
 const RepoVersion = "6" // version
@@ -337,7 +339,7 @@ func main() {
 		//reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Force overwriting the db will destroy your existing keys and history. Are you really, really sure you want to continue? (y/n): ")
 		//resp, _ := reader.ReadString('\n')
-		resp := "yes\n"
+		resp := "no\n"
 		if strings.ToLower(resp) == "y\n" || strings.ToLower(resp) == "yes\n" || strings.ToLower(resp)[:1] == "y" {
 			os.RemoveAll(repoPath)
 			err = InitializeRepo(repoPath, passwd, Mnemonic, creationDate)
@@ -346,7 +348,7 @@ func main() {
 			}
 			fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
 		} else {
-			os.Exit(1)
+			//os.Exit(1)
 		}
 	} else if err != nil {
 		os.Exit(1)
@@ -442,47 +444,73 @@ func main() {
 
 	fmt.Printf("Daemon is ready\n")
 
-	//=========================================== Add ===========================================
-	//hash, err := ipfs.AddFile(ctx, path.Join("./", "README.md"))
-	//if err != nil {
-	//	log.Info(err.Error())
-	//	os.Exit(1)
-	//}
-	////test.bin: zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U
-	////README.md on linux:   zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9
-	////README.md on windows: zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo
-	//if hash != "zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo" {
-	//	log.Info("Ipfs add file failed")
-	//} else {
-	//	log.Info("Ipfs add file successfully: ", hash)
-	//}
-
-	// =========================================== Connect peers ===========================================
-	peer := "/ip4/138.68.52.240/tcp/4001/ipfs/QmNjcgti3Y4Cbh4XBng8ACidsitt4m2iVoWhNBNpNdwfJm"
-	peers, err := ipfs.ConnectTo(ctx, peer)
-	if err != nil {
-		log.Info(err.Error())
-		//os.Exit(1)
-	}
-	log.Infof("connect %s successfully\n", peer)
-	for i, peer := range peers {
-		log.Infof("#%d: %s\n", i, peer)
+	if flag.Arg(0) == "srv" {
+		//=========================================== Add ===========================================
+		//README.md on linux:   zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9
+		//README.md on windows: zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo
+		hash, err := ipfs.AddFile(ctx, path.Join("./", "README.md"))
+		if err != nil {
+			log.Info(err.Error())
+			os.Exit(1)
+		}
+		if runtime.GOOS == "windows" && hash != "zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo" {
+			log.Info("Ipfs add file on windows failed")
+		} else if hash != "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9" {
+			log.Info("Ipfs add file on uni* failed")
+		} else {
+			log.Info("Ipfs add file successfully: ", hash)
+		}
+		//test.bin: zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U
+		hash, err = ipfs.AddFile(ctx, path.Join("./resource", "test.bin"))
+		if err != nil {
+			log.Info(err.Error())
+			os.Exit(1)
+		}
+		if hash != "zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo" {
+			log.Info("Ipfs add file failed")
+		} else {
+			log.Info("Ipfs add file successfully: ", hash)
+		}
+	} else if flag.Arg(0) == "cli" {
+		// =========================================== Connect peers ===========================================
+		//peer := "/ip4/192.168.222.180/tcp/4001/ipfs/QmXZf95S6CDpzyeyFGr8SU2b3hm68FrxUyRpTgTR5YxZ56"
+		peer := "/ip4/138.197.232.22/tcp/4001/ipfs/QmZjmQH4e7opwmeFc23vUZ4nwuPw1oJgFKSpJoAJgrpQiy"
+		for i := 0; i < 5; i++ {
+			peers, err := ipfs.ConnectTo(ctx, peer)
+			if err != nil {
+				log.Info(err.Error())
+				//os.Exit(1)
+				continue
+			}
+			log.Infof("connect %s successfully\n", peer)
+			for i, peer := range peers {
+				log.Infof("#%d: %s\n", i, peer)
+			}
+			break
+		}
 	}
 
 	////=========================================== Cat ===========================================
-	file_hash := "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9"
-	dataText, err := ipfs.Cat(ctx, file_hash, time.Second*1000)
-	if err != nil {
-		log.Info(err.Error())
-		os.Exit(1)
+	var file_hash string
+	if runtime.GOOS == "windows" {
+		file_hash = "zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo"
 	} else {
-		log.Infof("Cat %s as follow:\n%s", file_hash, dataText)
+		file_hash = "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9"
+	}
+	for i := 0; i < 3; i++ {
+		dataText, err := ipfs.Cat(ctx, file_hash, time.Second*120)
+		if err != nil {
+			log.Info(err.Error())
+			<-time.After(1 * time.Second)
+			continue
+		} else {
+			log.Infof("Cat %s as follow:\n%s", file_hash, dataText)
+			break
+		}
 	}
 
 	//=========================================== Swarm peers ===========================================
-	for i := 0; i < 10; i++ {
-		<-time.After(1 * time.Second)
-
+	for i := 0; i < 3; i++ {
 		pbool := make(chan []string)
 		go func() {
 			peers, err := ipfs.ConnectedPeers(ctx)
@@ -497,52 +525,62 @@ func main() {
 		peers := <-pbool
 		if len(peers) == 0 {
 			log.Infof("No peers in swarm")
+			<-time.After(1 * time.Second)
 		} else {
 			for i, peer := range peers {
 				log.Infof("peer #%d: %s\n", i, peer)
 			}
-			//break
+			break
 		}
 	}
 
 	//=========================================== Get ===========================================
-	for i := 0; i < 10; i++ {
-		<-time.After(1 * time.Second)
+	var fhash []string
+	fhash = append(fhash, "zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U")
+	if runtime.GOOS == "windows" {
+		fhash = append(fhash, "zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo")
+	} else {
+		fhash = append(fhash, "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9")
+	}
+	for i, hash := range fhash {
+		for j := 0; j < 3; j++ {
+			// bbool := make(chan []byte)
+			// cbool := make(chan bool)
+			// go func() {
+			home, herr := homedir.Dir()
+			if herr != nil {
+				log.Error(herr.Error())
+				os.Exit(1)
+			}
 
-		// bbool := make(chan []byte)
-		// cbool := make(chan bool)
-		// go func() {
-		home, herr := homedir.Dir()
-		if herr != nil {
-			log.Error(herr.Error())
-			os.Exit(1)
+			var fnamebuf bytes.Buffer
+			fnamebuf.WriteString(hash)
+			fnamebuf.WriteString("_")
+			fnamebuf.WriteString(strconv.Itoa(i))
+
+			ofpath := filepath.Join(home, fnamebuf.String())
+			d, err := ipfs.Get(ctx, hash, ofpath, time.Second*120)
+			if err != nil {
+				// cbool <- false
+				// bbool <- []byte(err.Error())
+				log.Info(err.Error())
+				<-time.After(1 * time.Second)
+			} else /*if string(d[:]) == hash*/ {
+				// cbool <- true
+				// bbool <- d
+				log.Infof("Get %s Ok!", d)
+				break
+			} /*else {
+				log.Infof("Get %s Failed!", hash)
+			}*/
+			// }()
+			// d := <-bbool
+			// getOk := <-cbool
+			//if /*getOk*/ len(d) != 0 {
+			//	log.Infof("%s", d)
+			//	//break
+			//}
 		}
-
-		var fnamebuf bytes.Buffer
-		fnamebuf.WriteString(file_hash)
-		fnamebuf.WriteString("_")
-		fnamebuf.WriteString(strconv.Itoa(i))
-
-		ofpath := filepath.Join(home, fnamebuf.String())
-		d, err := ipfs.Get(ctx, file_hash, ofpath, time.Second*10)
-		if err != nil {
-			// cbool <- false
-			// bbool <- []byte(err.Error())
-			log.Info(err.Error())
-		} else /*if string(d[:]) == file_hash*/ {
-			// cbool <- true
-			// bbool <- d
-			log.Infof("Get %s Ok!", d)
-		} /*else {
-			log.Infof("Get %s Failed!", file_hash)
-		}*/
-		// }()
-		// d := <-bbool
-		// getOk := <-cbool
-		//if /*getOk*/ len(d) != 0 {
-		//	log.Infof("%s", d)
-		//	//break
-		//}
 	}
 
 	//=========================================== End ===========================================
