@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -31,8 +32,6 @@ import (
 	"gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
 	recpb "gx/ipfs/QmbxkgUceEcuSZ4ZdBA3x74VUDSSYjHYmmeEqkjxbtZ6Jg/go-libp2p-record/pb"
 
-	"bytes"
-	"flag"
 	"github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
 	"gx/ipfs/QmPR2JzfKd9poHx9XBhzoFeBBC31ZM3W5iUPKJZWyaoZZm/go-libp2p-routing"
 	"gx/ipfs/QmT7PnPxYkeKPCG8pAnucfcjrXc15Q7FgvFv7YC24EPrw8/go-libp2p-kad-dht"
@@ -444,7 +443,7 @@ func main() {
 
 	fmt.Printf("Daemon is ready\n")
 
-	if flag.Arg(0) == "srv" {
+	if os.Args[1] == "srv" {
 		//=========================================== Add ===========================================
 		//README.md on linux:   zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9
 		//README.md on windows: zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo
@@ -471,7 +470,7 @@ func main() {
 		} else {
 			log.Info("Ipfs add file successfully: ", hash)
 		}
-	} else if flag.Arg(0) == "cli" {
+	} else if os.Args[1] == "cli" {
 		// =========================================== Connect peers ===========================================
 		//peer := "/ip4/192.168.222.180/tcp/4001/ipfs/QmXZf95S6CDpzyeyFGr8SU2b3hm68FrxUyRpTgTR5YxZ56"
 		peer := "/ip4/138.197.232.22/tcp/4001/ipfs/QmZjmQH4e7opwmeFc23vUZ4nwuPw1oJgFKSpJoAJgrpQiy"
@@ -534,7 +533,6 @@ func main() {
 		}
 	}
 
-	//=========================================== Get ===========================================
 	var fhash []string
 	fhash = append(fhash, "zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U")
 	if runtime.GOOS == "windows" {
@@ -542,6 +540,53 @@ func main() {
 	} else {
 		fhash = append(fhash, "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9")
 	}
+	//=========================================== Pin ===========================================
+	// pin add
+	for _, hash := range fhash {
+		for j := 0; j < 3; j++ {
+			err := ipfs.Pin(ctx, hash)
+			if err != nil {
+				log.Info(err.Error())
+				<-time.After(1 * time.Second)
+			} else {
+				log.Infof("Pin %s Ok!", hash)
+				break
+			}
+		}
+	}
+	// pin ls
+	objs1, err := ipfs.PinLs(ctx)
+	if err != nil {
+		log.Info(err.Error())
+	} else {
+		for i, obj := range objs1 {
+			log.Infof("obj #%d: %s\n", i, obj)
+		}
+	}
+	// unpin
+	for _, hash := range fhash {
+		for j := 0; j < 3; j++ {
+			err := ipfs.UnPinDir(ctx, hash)
+			if err != nil {
+				log.Info(err.Error())
+				<-time.After(1 * time.Second)
+			} else {
+				log.Infof("UnPin %s Ok!", hash)
+				break
+			}
+		}
+	}
+	// pin ls
+	objs2, err := ipfs.PinLs(ctx)
+	if err != nil {
+		log.Info(err.Error())
+	} else {
+		for i, obj := range objs2 {
+			log.Infof("obj #%d: %s\n", i, obj)
+		}
+	}
+
+	//=========================================== Get ===========================================
 	for i, hash := range fhash {
 		for j := 0; j < 3; j++ {
 			// bbool := make(chan []byte)
