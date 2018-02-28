@@ -509,29 +509,31 @@ func main() {
 	}
 
 	//=========================================== Swarm peers ===========================================
-	for i := 0; i < 3; i++ {
-		pbool := make(chan []string)
-		go func() {
-			peers, err := ipfs.ConnectedPeers(ctx)
-			if err != nil {
-				errInfo := make([]string, 1)
-				errInfo = append(errInfo, err.Error())
-				pbool <- errInfo
-				log.Info(err.Error())
+	go func() {
+		for {
+			pbool := make(chan []string)
+			go func() {
+				peers, err := ipfs.ConnectedPeers(ctx)
+				if err != nil {
+					errInfo := make([]string, 1)
+					errInfo = append(errInfo, err.Error())
+					pbool <- errInfo
+					log.Info(err.Error())
+				}
+				pbool <- peers
+			}()
+			peers := <-pbool
+			if len(peers) == 0 {
+				log.Infof("No peers in swarm")
+			} else {
+				for i, peer := range peers {
+					log.Infof("peer #%d: %s\n", i, peer)
+				}
+				break
 			}
-			pbool <- peers
-		}()
-		peers := <-pbool
-		if len(peers) == 0 {
-			log.Infof("No peers in swarm")
-			<-time.After(1 * time.Second)
-		} else {
-			for i, peer := range peers {
-				log.Infof("peer #%d: %s\n", i, peer)
-			}
-			break
+			<-time.After(5 * time.Second)
 		}
-	}
+	}()
 
 	var fhash []string
 	fhash = append(fhash, "zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U")
