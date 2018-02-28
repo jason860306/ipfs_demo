@@ -321,6 +321,10 @@ func constructDHTRouting(ctx context.Context, host p2phost.Host, dstore ipfsrepo
 }
 
 func main() {
+	if len(os.Args) != 2 {
+		fmt.Printf("usage: %s [cli|srv]", os.Args[0])
+		os.Exit(1)
+	}
 	//=========================================== Init ===========================================
 	// Set repo path
 	repoPath, err := GetRepoPath()
@@ -529,9 +533,9 @@ func main() {
 				for i, peer := range peers {
 					log.Infof("peer #%d: %s\n", i, peer)
 				}
-				break
+				//break
 			}
-			<-time.After(5 * time.Second)
+			<-time.After(1 * time.Second)
 		}
 	}()
 
