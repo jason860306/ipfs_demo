@@ -32,9 +32,9 @@ func IdentityFromKey(privkey []byte) (config.Identity, error) {
 }
 
 func IdentityKeyFromSeed(seed []byte, bits int) ([]byte, error) {
-	hmac := hmac.New(sha256.New, []byte("ifps_demo seed"))
-	hmac.Write(seed)
-	reader := bytes.NewReader(hmac.Sum(nil))
+	tmp_hmac := hmac.New(sha256.New, []byte("ifps_demo seed"))
+	tmp_hmac.Write(seed)
+	reader := bytes.NewReader(tmp_hmac.Sum(nil))
 	sk, _, err := libp2p.GenerateKeyPairWithReader(libp2p.Ed25519, bits, reader)
 	if err != nil {
 		return nil, err
