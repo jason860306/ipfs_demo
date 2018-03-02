@@ -48,7 +48,7 @@ var DefaultBootstrapAddresses = []string{
 	//"/ip4/139.59.174.197/tcp/4001/ipfs/QmZfTbnpvPwxCjpCG3CXJ7pfexgkBZ2kgChAiRJrTK1HsM", // Brixton Village
 	//"/ip4/139.59.6.222/tcp/4001/ipfs/QmRDcEDK9gSViAevCHiE6ghkaBCU7rTuQj4BDpmCzRvRYg",   // Johari
 	//"/ip4/46.101.198.170/tcp/4001/ipfs/QmePWxsFT9wY3QuukgVDB7XZpqdKhrqJTHTXU7ECLDWJqX", // Duo Search
-	"/ip4/138.197.232.22/tcp/4001/ipfs/QmXC5YrfyLtwcx3Gh9bN1Dx6K2o2PAhCp9LV7Cy2J3gNdL", // szj0306@do
+	"/ip4/138.197.232.22/tcp/4001/ipfs/QmQULQ5oJZoVkhjveMidLox4fSBmg5wN6QUdtDvyEn497Q", // szj0306@do
 	"/ip4/35.194.251.184/tcp/4001/ipfs/QmXQbseq9j14u4BEwwnWX83ss3fmuqbmHJwSafCfL7A7iS", // szj0306@gcp
 }
 
