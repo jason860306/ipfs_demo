@@ -1,9 +1,10 @@
 package ipfs
 
 import (
-	"bytes"
-	"crypto/hmac"
-	"crypto/sha256"
+	//"bytes"
+	//"crypto/hmac"
+	//"crypto/sha256"
+	"crypto/rand"
 	"encoding/base64"
 	"github.com/ipfs/go-ipfs/repo/config"
 	peer "gx/ipfs/QmXYjuNuxVzXKJCfWasQk1RqkhVLDM9jtUKhqc2WPQmFSB/go-libp2p-peer"
@@ -32,10 +33,11 @@ func IdentityFromKey(privkey []byte) (config.Identity, error) {
 }
 
 func IdentityKeyFromSeed(seed []byte, bits int) ([]byte, error) {
-	tmp_hmac := hmac.New(sha256.New, []byte("ifps_demo seed"))
-	tmp_hmac.Write(seed)
-	reader := bytes.NewReader(tmp_hmac.Sum(nil))
-	sk, _, err := libp2p.GenerateKeyPairWithReader(libp2p.Ed25519, bits, reader)
+	//tmp_hmac := hmac.New(sha256.New, []byte("ifps_demo seed"))
+	//tmp_hmac.Write(seed)
+	//reader := bytes.NewReader(tmp_hmac.Sum(nil))
+	//sk, _, err := libp2p.GenerateKeyPairWithReader(libp2p.Ed25519, bits, reader)
+	sk, _, err := libp2p.GenerateKeyPairWithReader(libp2p.RSA, bits, rand.Reader)
 	if err != nil {
 		return nil, err
 	}

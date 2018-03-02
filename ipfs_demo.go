@@ -23,6 +23,7 @@ import (
 	"github.com/ipfs/go-ipfs/repo/config"
 	"github.com/ipfs/go-ipfs/repo/fsrepo"
 	"github.com/ipfs/go-ipfs/thirdparty/ds-help"
+	"github.com/mitchellh/go-homedir"
 	"github.com/op/go-logging"
 	"github.com/tyler-smith/go-bip39"
 
@@ -32,7 +33,6 @@ import (
 	"gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
 	recpb "gx/ipfs/QmbxkgUceEcuSZ4ZdBA3x74VUDSSYjHYmmeEqkjxbtZ6Jg/go-libp2p-record/pb"
 
-	"github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
 	"gx/ipfs/QmPR2JzfKd9poHx9XBhzoFeBBC31ZM3W5iUPKJZWyaoZZm/go-libp2p-routing"
 	"gx/ipfs/QmT7PnPxYkeKPCG8pAnucfcjrXc15Q7FgvFv7YC24EPrw8/go-libp2p-kad-dht"
 	p2phost "gx/ipfs/QmaSxYRuMq4pkpBBG2CYaRrPx2z7NmMVEs34b9g61biQA6/go-libp2p-host"
@@ -44,10 +44,11 @@ var log = logging.MustGetLogger("ipfs_demo")
 var ErrRepoExists = errors.New("IPFS configuration file exists. Reinitializing would overwrite your keys. Use -f to force overwrite.") // error message
 
 var DefaultBootstrapAddresses = []string{
-	"/ip4/107.170.133.32/tcp/4001/ipfs/QmUZRGLhcKXF1JyuaHgKm23LvqcoMYwtb9jmh8CkP4og3K", // Le Marché Serpette
-	"/ip4/139.59.174.197/tcp/4001/ipfs/QmZfTbnpvPwxCjpCG3CXJ7pfexgkBZ2kgChAiRJrTK1HsM", // Brixton Village
-	"/ip4/139.59.6.222/tcp/4001/ipfs/QmRDcEDK9gSViAevCHiE6ghkaBCU7rTuQj4BDpmCzRvRYg",   // Johari
-	"/ip4/46.101.198.170/tcp/4001/ipfs/QmePWxsFT9wY3QuukgVDB7XZpqdKhrqJTHTXU7ECLDWJqX", // Duo Search
+	//"/ip4/107.170.133.32/tcp/4001/ipfs/QmUZRGLhcKXF1JyuaHgKm23LvqcoMYwtb9jmh8CkP4og3K", // Le Marché Serpette
+	//"/ip4/139.59.174.197/tcp/4001/ipfs/QmZfTbnpvPwxCjpCG3CXJ7pfexgkBZ2kgChAiRJrTK1HsM", // Brixton Village
+	//"/ip4/139.59.6.222/tcp/4001/ipfs/QmRDcEDK9gSViAevCHiE6ghkaBCU7rTuQj4BDpmCzRvRYg",   // Johari
+	//"/ip4/46.101.198.170/tcp/4001/ipfs/QmePWxsFT9wY3QuukgVDB7XZpqdKhrqJTHTXU7ECLDWJqX", // Duo Search
+	"/ip4/138.197.232.22/tcp/4001/ipfs/QmZjmQH4e7opwmeFc23vUZ4nwuPw1oJgFKSpJoAJgrpQiy", // szj0306
 }
 
 /* Returns the directory to store repo data in.
@@ -258,7 +259,7 @@ func DoInit(repoRoot string, nBitsForKeypair int, password string, mnemonic stri
 		}
 	}
 	seed := bip39.NewSeed(mnemonic, "Secret Passphrase")
-	fmt.Printf("Generating Ed25519 keypair...")
+	fmt.Printf("Generating RSA keypair...")
 	identityKey, err := ipfs.IdentityKeyFromSeed(seed, nBitsForKeypair)
 	if err != nil {
 		return err
@@ -295,7 +296,7 @@ func DoInit(repoRoot string, nBitsForKeypair int, password string, mnemonic stri
 
 func InitializeRepo(dataDir, password, mnemonic string, creationDate time.Time) error {
 	// Initialize the IPFS repo if it does not already exist
-	return DoInit(dataDir, 4096, password, mnemonic, creationDate)
+	return DoInit(dataDir, 2048, password, mnemonic, creationDate)
 }
 
 // Prints the addresses of the host
@@ -342,7 +343,7 @@ func main() {
 		//reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Force overwriting the db will destroy your existing keys and history. Are you really, really sure you want to continue? (y/n): ")
 		//resp, _ := reader.ReadString('\n')
-		resp := "yes\n"
+		resp := "no\n"
 		if strings.ToLower(resp) == "y\n" || strings.ToLower(resp) == "yes\n" || strings.ToLower(resp)[:1] == "y" {
 			os.RemoveAll(repoPath)
 			err = InitializeRepo(repoPath, passwd, Mnemonic, creationDate)
@@ -373,17 +374,6 @@ func main() {
 		log.Error(err)
 		os.Exit(1)
 	}
-
-	//identityKey, err := sqliteDB.Config().GetIdentityKey()
-	//if err != nil {
-	//	log.Error(err)
-	//	os.Exit(1)
-	//}
-	//identity, err := ipfs.IdentityFromKey(identityKey)
-	//if err != nil {
-	//	os.Exit(1)
-	//}
-	//cfg.Identity = identity
 
 	ncfg := &core.BuildCfg{
 		Repo:   r,
@@ -475,22 +465,22 @@ func main() {
 			log.Info("Ipfs add file successfully: ", hash)
 		}
 	} else if os.Args[1] == "cli" {
-		// =========================================== Connect peers ===========================================
-		//peer := "/ip4/192.168.222.180/tcp/4001/ipfs/QmXZf95S6CDpzyeyFGr8SU2b3hm68FrxUyRpTgTR5YxZ56"
-		peer := "/ip4/138.197.232.22/tcp/4001/ipfs/QmZjmQH4e7opwmeFc23vUZ4nwuPw1oJgFKSpJoAJgrpQiy"
-		for i := 0; i < 5; i++ {
-			peers, err := ipfs.ConnectTo(ctx, peer)
-			if err != nil {
-				log.Info(err.Error())
-				//os.Exit(1)
-				continue
-			}
-			log.Infof("connect %s successfully\n", peer)
-			for i, peer := range peers {
-				log.Infof("#%d: %s\n", i, peer)
-			}
-			break
-		}
+		//// =========================================== Connect peers ===========================================
+		////peer := "/ip4/192.168.222.180/tcp/4001/ipfs/QmXZf95S6CDpzyeyFGr8SU2b3hm68FrxUyRpTgTR5YxZ56"
+		//peer := "/ip4/138.197.232.22/tcp/4001/ipfs/QmZjmQH4e7opwmeFc23vUZ4nwuPw1oJgFKSpJoAJgrpQiy"
+		//for i := 0; i < 5; i++ {
+		//	peers, err := ipfs.ConnectTo(ctx, peer)
+		//	if err != nil {
+		//		log.Info(err.Error())
+		//		//os.Exit(1)
+		//		continue
+		//	}
+		//	log.Infof("connect %s successfully\n", peer)
+		//	for i, peer := range peers {
+		//		log.Infof("#%d: %s\n", i, peer)
+		//	}
+		//	break
+		//}
 	}
 
 	////=========================================== Cat ===========================================
@@ -593,44 +583,26 @@ func main() {
 	}
 
 	//=========================================== Get ===========================================
-	for i, hash := range fhash {
+	for _, hash := range fhash {
 		for j := 0; j < 3; j++ {
-			// bbool := make(chan []byte)
-			// cbool := make(chan bool)
-			// go func() {
 			home, herr := homedir.Dir()
 			if herr != nil {
 				log.Error(herr.Error())
 				os.Exit(1)
 			}
-
 			var fnamebuf bytes.Buffer
 			fnamebuf.WriteString(hash)
 			fnamebuf.WriteString("_")
-			fnamebuf.WriteString(strconv.Itoa(i))
-
+			fnamebuf.WriteString(strconv.Itoa(j))
 			ofpath := filepath.Join(home, fnamebuf.String())
 			d, err := ipfs.Get(ctx, hash, ofpath, time.Second*120)
 			if err != nil {
-				// cbool <- false
-				// bbool <- []byte(err.Error())
 				log.Info(err.Error())
 				<-time.After(1 * time.Second)
-			} else /*if string(d[:]) == hash*/ {
-				// cbool <- true
-				// bbool <- d
+			} else {
 				log.Infof("Get %s Ok!", d)
 				break
-			} /*else {
-				log.Infof("Get %s Failed!", hash)
-			}*/
-			// }()
-			// d := <-bbool
-			// getOk := <-cbool
-			//if /*getOk*/ len(d) != 0 {
-			//	log.Infof("%s", d)
-			//	//break
-			//}
+			}
 		}
 	}
 
