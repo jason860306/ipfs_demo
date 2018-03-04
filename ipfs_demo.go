@@ -25,7 +25,6 @@ import (
 	"github.com/ipfs/go-ipfs/thirdparty/ds-help"
 	"github.com/mitchellh/go-homedir"
 	"github.com/op/go-logging"
-	"github.com/tyler-smith/go-bip39"
 
 	"github.com/jason860306/ipfs_demo/ipfs"
 
@@ -185,18 +184,6 @@ func InitConfig(repoRoot string) (*config.Config, error) {
 	return conf, nil
 }
 
-func createMnemonic(newEntropy func(int) ([]byte, error), newMnemonic func([]byte) (string, error)) (string, error) {
-	entropy, err := newEntropy(128)
-	if err != nil {
-		return "", err
-	}
-	mnemonic, err := newMnemonic(entropy)
-	if err != nil {
-		return "", err
-	}
-	return mnemonic, nil
-}
-
 func addConfigExtensions(repoRoot string) error {
 	r, err := fsrepo.Open(repoRoot)
 	if err != nil { // NB: repo is owned by the node
@@ -205,7 +192,7 @@ func addConfigExtensions(repoRoot string) error {
 	return r.Close()
 }
 
-func initializeIpnsKeyspace(repoRoot string, privKeyBytes []byte) error {
+func initializeIpnsKeyspace(repoRoot string) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -213,17 +200,7 @@ func initializeIpnsKeyspace(repoRoot string, privKeyBytes []byte) error {
 	if err != nil { // NB: repo is owned by the node
 		return err
 	}
-	cfg, err := r.Config()
-	if err != nil {
-		log.Error(err)
-		return err
-	}
-	identity, err := ipfs.IdentityFromKey(privKeyBytes)
-	if err != nil {
-		return err
-	}
 
-	cfg.Identity = identity
 	nd, err := core.NewNode(ctx, &core.BuildCfg{Repo: r})
 	if err != nil {
 		return err
@@ -253,21 +230,7 @@ func DoInit(repoRoot string, nBitsForKeypair int, password string, mnemonic stri
 		return err
 	}
 
-	if mnemonic == "" {
-		mnemonic, err = createMnemonic(bip39.NewEntropy, bip39.NewMnemonic)
-		if err != nil {
-			return err
-		}
-	}
-	seed := bip39.NewSeed(mnemonic, "Secret Passphrase")
-	fmt.Printf("Generating RSA keypair...")
-	identityKey, err := ipfs.IdentityKeyFromSeed(seed, nBitsForKeypair)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Done\n")
-
-	identity, err := ipfs.IdentityFromKey(identityKey)
+	identity, err := ipfs.IdentityConfig(4096)
 	if err != nil {
 		return err
 	}
@@ -292,7 +255,7 @@ func DoInit(repoRoot string, nBitsForKeypair int, password string, mnemonic stri
 	}
 	f.Close()
 
-	return initializeIpnsKeyspace(repoRoot, identityKey)
+	return initializeIpnsKeyspace(repoRoot)
 }
 
 func InitializeRepo(dataDir, password, mnemonic string, creationDate time.Time) error {
