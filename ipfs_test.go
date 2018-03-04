@@ -1,4 +1,4 @@
-package main
+package ipfs_core
 
 import (
 	"bufio"
@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/ipfs/go-ipfs/commands"
@@ -32,6 +33,7 @@ import (
 	"gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
 	recpb "gx/ipfs/QmbxkgUceEcuSZ4ZdBA3x74VUDSSYjHYmmeEqkjxbtZ6Jg/go-libp2p-record/pb"
 
+	"flag"
 	"gx/ipfs/QmPR2JzfKd9poHx9XBhzoFeBBC31ZM3W5iUPKJZWyaoZZm/go-libp2p-routing"
 	"gx/ipfs/QmT7PnPxYkeKPCG8pAnucfcjrXc15Q7FgvFv7YC24EPrw8/go-libp2p-kad-dht"
 	p2phost "gx/ipfs/QmaSxYRuMq4pkpBBG2CYaRrPx2z7NmMVEs34b9g61biQA6/go-libp2p-host"
@@ -285,7 +287,9 @@ func constructDHTRouting(ctx context.Context, host p2phost.Host, dstore ipfsrepo
 	return dhtRouting, nil
 }
 
-func main() {
+func TestIpfs(t *testing.T) {
+	args := flag.Args()
+	os.Args = append([]string{os.Args[0]}, args...)
 	if len(os.Args) != 2 {
 		fmt.Printf("usage: %s [cli|srv]", os.Args[0])
 		os.Exit(1)

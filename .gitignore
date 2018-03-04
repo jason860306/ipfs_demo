@@ -1,16 +1,51 @@
-# Binaries for programs and plugins
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+*.dll
+*.dylib
+
+# Folders
+_obj
+_test
+__pycache__
+
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+
+_testmain.go
+
 *.exe
 *.exe~
-*.dll
-*.so
-*.dylib
 
 # Test binary, build with `go test -c`
 *.test
+*.prof
+*.iml
+.gx/
+dist
+
+# Development environment files
+.ackrc
+.tags*
+*.sw?
+
+# macOS
+.DS_Store
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
 # project directory of goland
+.idea
 .idea/**
+
+.vscode
 .vscode/**

@@ -1,10 +1,14 @@
 package ipfs_cmds
 
 import (
+	"bytes"
 	"os"
 	"path"
+	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 func TestGet(t *testing.T) {
@@ -21,7 +25,15 @@ func TestGet(t *testing.T) {
 	}
 
 	//=========================================== Get ===========================================
-	dataText, err := Get(ctx, hash, time.Second*10)
+	home, herr := homedir.Dir()
+	if herr != nil {
+		log.Error(herr.Error())
+		os.Exit(1)
+	}
+	var fnamebuf bytes.Buffer
+	fnamebuf.WriteString(hash)
+	ofpath := filepath.Join(home, fnamebuf.String())
+	dataText, err := Get(ctx, hash, ofpath, time.Second*10)
 	if err != nil {
 		log.Info(err.Error())
 		os.Exit(1)

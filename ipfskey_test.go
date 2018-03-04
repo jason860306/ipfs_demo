@@ -1,4 +1,4 @@
-package main
+package ipfs_core
 
 import (
 	"bytes"
@@ -21,19 +21,8 @@ import (
 	libp2p "gx/ipfs/QmaPbCnUMBohSGo3KnxEa2bHqyJVVeEEcwtqJAYxerieBo/go-libp2p-crypto"
 	//proto "gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
 	//pb "gx/ipfs/QmaPbCnUMBohSGo3KnxEa2bHqyJVVeEEcwtqJAYxerieBo/go-libp2p-crypto/pb"
+	"testing"
 )
-
-func createMnemonic1(newEntropy func(int) ([]byte, error), newMnemonic func([]byte) (string, error)) (string, error) {
-	entropy, err := newEntropy(128)
-	if err != nil {
-		return "", err
-	}
-	mnemonic, err := newMnemonic(entropy)
-	if err != nil {
-		return "", err
-	}
-	return mnemonic, nil
-}
 
 func exportRsaPrivateKeyAsPemStr(privkey libp2p.PrivKey) string {
 	rsaSK, ok := privkey.(*libp2p.RsaPrivateKey)
@@ -133,17 +122,7 @@ func parseRsaPublicKey(pkbytes []byte) (libp2p.PubKey, error) {
 	return pub, nil
 }
 
-func main() {
-	//mnemonic, err := createMnemonic1(bip39.NewEntropy, bip39.NewMnemonic)
-	//if err != nil {
-	//	os.Exit(1)
-	//}
-	//seed := bip39.NewSeed(mnemonic, "Secret Passphrase")
-	//fmt.Printf("Generating RSA keypair...")
-	//tmp_hmac := hmac.New(sha256.New, []byte("ifps_demo seed"))
-	//tmp_hmac.Write(seed)
-	//reader := bytes.NewReader(tmp_hmac.Sum(nil))
-
+func TestIpfsKey(t *testing.T) {
 	const nBitsForKeypair = 4096
 	skMarshal, _, err := libp2p.GenerateKeyPairWithReader(libp2p.RSA, nBitsForKeypair, rand.Reader /*reader*/)
 	if err != nil {
