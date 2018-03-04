@@ -1,4 +1,4 @@
-package ipfs
+package ipfs_cmds
 
 import (
 	"context"
@@ -19,8 +19,8 @@ import (
 	"time"
 
 	routing "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht"
-	pb "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht/pb"
 	dhtpb "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht/pb"
+	pb "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht/pb"
 )
 
 const MAGIC = "000000000000000000000000"

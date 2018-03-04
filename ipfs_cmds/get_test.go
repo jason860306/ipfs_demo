@@ -1,10 +1,10 @@
-package ipfs
+package ipfs_cmds
 
 import (
+	"os"
 	"path"
 	"testing"
 	"time"
-	"os"
 )
 
 func TestGet(t *testing.T) {
@@ -21,7 +21,7 @@ func TestGet(t *testing.T) {
 	}
 
 	//=========================================== Get ===========================================
-	dataText, err := Get(ctx, hash, time.Second * 10)
+	dataText, err := Get(ctx, hash, time.Second*10)
 	if err != nil {
 		log.Info(err.Error())
 		os.Exit(1)

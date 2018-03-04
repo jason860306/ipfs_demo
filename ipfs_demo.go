@@ -26,7 +26,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/op/go-logging"
 
-	"github.com/jason860306/ipfs_demo/ipfs"
+	"github.com/jason860306/ipfs_demo/ipfs_cmds"
 
 	dhtutil "gx/ipfs/QmUCS9EnqNq1kCnJds2eLDypBiS21aSiCf1MVzSUVB9TGA/go-libp2p-kad-dht/util"
 	"gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
@@ -230,7 +230,7 @@ func DoInit(repoRoot string, nBitsForKeypair int, password string, mnemonic stri
 		return err
 	}
 
-	identity, err := ipfs.IdentityConfig(4096)
+	identity, err := ipfs_cmds.IdentityConfig(4096)
 	if err != nil {
 		return err
 	}
@@ -367,7 +367,7 @@ func main() {
 	}
 
 	//=========================================== Set ipfs log level ===========================================
-	//logmsg, logerr := ipfs.Log(ctx, "all", "warning")
+	//logmsg, logerr := ipfs.Log(ctx, "all", "debug")
 	//if logerr != nil {
 	//	log.Error(logerr.Error())
 	//} else {
@@ -405,7 +405,7 @@ func main() {
 		//=========================================== Add ===========================================
 		//README.md on linux:   zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9
 		//README.md on windows: zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo
-		hash, err := ipfs.AddFile(ctx, path.Join("./", "README.md"))
+		hash, err := ipfs_cmds.AddFile(ctx, path.Join("./", "README.md"))
 		if err != nil {
 			log.Info(err.Error())
 			os.Exit(1)
@@ -418,7 +418,7 @@ func main() {
 			log.Info("Ipfs add file successfully: ", hash)
 		}
 		//test.bin: zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U
-		hash, err = ipfs.AddFile(ctx, path.Join("./resource", "test.bin"))
+		hash, err = ipfs_cmds.AddFile(ctx, path.Join("./resource", "test.bin"))
 		if err != nil {
 			log.Info(err.Error())
 			os.Exit(1)
@@ -431,7 +431,8 @@ func main() {
 	} else if os.Args[1] == "cli" {
 		//// =========================================== Connect peers ===========================================
 		////peer := "/ip4/192.168.222.180/tcp/4001/ipfs/QmXZf95S6CDpzyeyFGr8SU2b3hm68FrxUyRpTgTR5YxZ56"
-		//peer := "/ip4/138.197.232.22/tcp/4001/ipfs/QmZjmQH4e7opwmeFc23vUZ4nwuPw1oJgFKSpJoAJgrpQiy"
+		////peer := "/ip4/138.197.232.22/tcp/4001/ipfs/QmZjmQH4e7opwmeFc23vUZ4nwuPw1oJgFKSpJoAJgrpQiy"
+		//peer := "/ip4/97.64.43.18/tcp/4001/ipfs/QmPUrqtsYZzpebQ4sYHiQqjtTGCEGUVu194jhHuVpBnGb3"
 		//for i := 0; i < 5; i++ {
 		//	peers, err := ipfs.ConnectTo(ctx, peer)
 		//	if err != nil {
@@ -455,7 +456,7 @@ func main() {
 		file_hash = "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9"
 	}
 	for i := 0; i < 3; i++ {
-		dataText, err := ipfs.Cat(ctx, file_hash, time.Second*120)
+		dataText, err := ipfs_cmds.Cat(ctx, file_hash, time.Second*120)
 		if err != nil {
 			log.Info(err.Error())
 			<-time.After(1 * time.Second)
@@ -471,7 +472,7 @@ func main() {
 		for {
 			pbool := make(chan []string)
 			go func() {
-				peers, err := ipfs.ConnectedPeers(ctx)
+				peers, err := ipfs_cmds.ConnectedPeers(ctx)
 				if err != nil {
 					errInfo := make([]string, 1)
 					errInfo = append(errInfo, err.Error())
@@ -504,7 +505,7 @@ func main() {
 	// pin add
 	for _, hash := range fhash {
 		for j := 0; j < 3; j++ {
-			err := ipfs.Pin(ctx, hash)
+			err := ipfs_cmds.Pin(ctx, hash)
 			if err != nil {
 				log.Info(err.Error())
 				<-time.After(1 * time.Second)
@@ -515,7 +516,7 @@ func main() {
 		}
 	}
 	// pin ls
-	objs1, err := ipfs.PinLs(ctx)
+	objs1, err := ipfs_cmds.PinLs(ctx)
 	if err != nil {
 		log.Info(err.Error())
 	} else {
@@ -526,7 +527,7 @@ func main() {
 	// unpin
 	for _, hash := range fhash {
 		for j := 0; j < 3; j++ {
-			err := ipfs.UnPinDir(ctx, hash)
+			err := ipfs_cmds.UnPinDir(ctx, hash)
 			if err != nil {
 				log.Info(err.Error())
 				<-time.After(1 * time.Second)
@@ -537,7 +538,7 @@ func main() {
 		}
 	}
 	// pin ls
-	objs2, err := ipfs.PinLs(ctx)
+	objs2, err := ipfs_cmds.PinLs(ctx)
 	if err != nil {
 		log.Info(err.Error())
 	} else {
@@ -559,7 +560,7 @@ func main() {
 			fnamebuf.WriteString("_")
 			fnamebuf.WriteString(strconv.Itoa(j))
 			ofpath := filepath.Join(home, fnamebuf.String())
-			d, err := ipfs.Get(ctx, hash, ofpath, time.Second*120)
+			d, err := ipfs_cmds.Get(ctx, hash, ofpath, time.Second*120)
 			if err != nil {
 				log.Info(err.Error())
 				<-time.After(1 * time.Second)
