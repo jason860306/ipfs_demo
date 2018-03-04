@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
+	"strings"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/op/go-logging"
@@ -19,12 +19,15 @@ import (
 	"github.com/jason860306/ipfs_demo/ipfs_cmds"
 )
 
-const RepoVersion = "6" // version
+const (
+	RepoVersion   = "6" // version
+	BitForKeyPair = 4096
+)
 
-var log = logging.MustGetLogger("repo")
-var ErrRepoExists = errors.New("IPFS configuration file exists. Reinitializing would overwrite your keys. Use -f to force overwrite.") // error message
+var log_repo = logging.MustGetLogger("repo")
+var errRepoExists = errors.New("IPFS configuration file exists. Reinitializing would overwrite your keys. Use -f to force overwrite.") // error message
 
-var DefaultBootstrapAddresses = []string{
+var defBootstrapAddrs = []string{
 	//"/ip4/107.170.133.32/tcp/4001/ipfs/QmUZRGLhcKXF1JyuaHgKm23LvqcoMYwtb9jmh8CkP4og3K", // Le Marché Serpette
 	//"/ip4/139.59.174.197/tcp/4001/ipfs/QmZfTbnpvPwxCjpCG3CXJ7pfexgkBZ2kgChAiRJrTK1HsM", // Brixton Village
 	//"/ip4/139.59.6.222/tcp/4001/ipfs/QmRDcEDK9gSViAevCHiE6ghkaBCU7rTuQj4BDpmCzRvRYg",   // Johari
@@ -35,7 +38,7 @@ var DefaultBootstrapAddresses = []string{
 
 /* Returns the directory to store repo data in.
    It depends on the OS and whether or not we are on testnet. */
-func GetRepoPath() (string, error) {
+func getRepoPath() (string, error) {
 	// Set default base path and directory name
 	directoryName := ".saturn"
 
@@ -85,8 +88,8 @@ func datastoreConfig(repoRoot string) config.Datastore {
 	}
 }
 
-func InitConfig(repoRoot string) (*config.Config, error) {
-	bootstrapPeers, err := config.ParseBootstrapPeers(DefaultBootstrapAddresses)
+func initConfig(repoRoot string) (*config.Config, error) {
+	bootstrapPeers, err := config.ParseBootstrapPeers(defBootstrapAddrs)
 	if err != nil {
 		return nil, err
 	}
@@ -137,14 +140,6 @@ func InitConfig(repoRoot string) (*config.Config, error) {
 	return conf, nil
 }
 
-func addConfigExtensions(repoRoot string) error {
-	r, err := fsrepo.Open(repoRoot)
-	if err != nil { // NB: repo is owned by the node
-		return err
-	}
-	return r.Close()
-}
-
 func initializeIpnsKeyspace(repoRoot string) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -168,61 +163,29 @@ func initializeIpnsKeyspace(repoRoot string) error {
 	return namesys.InitializeKeyspace(ctx, nd.DAG, nd.Namesys, nd.Pinning, nd.PrivateKey)
 }
 
-func checkWriteable(dir string) error {
-	_, err := os.Stat(dir)
-	if err == nil {
-		// Directory exists, make sure we can write to it
-		testfile := filepath.Join(dir, "test")
-		fi, err := os.Create(testfile)
-		if err != nil {
-			if os.IsPermission(err) {
-				return fmt.Errorf("%s is not writeable by the current user", dir)
-			}
-			return fmt.Errorf("Unexpected error while checking writeablility of repo root: %s", err)
-		}
-		fi.Close()
-		return os.Remove(testfile)
-	}
-
-	if os.IsNotExist(err) {
-		// Directory does not exist, check that we can create it
-		return os.Mkdir(dir, 0775)
-	}
-
-	if os.IsPermission(err) {
-		return fmt.Errorf("Cannot write to %s, incorrect permissions", err)
-	}
-
-	return err
-}
-
-func DoInit(repoRoot string, nBitsForKeypair int, password string, mnemonic string, creationDate time.Time) error {
+func doInit(repoRoot string, nBitsForKeypair int) error {
 
 	if fsrepo.IsInitialized(repoRoot) {
-		return ErrRepoExists
+		return errRepoExists
 	}
 
-	if err := checkWriteable(repoRoot); err != nil {
+	if err := CheckWriteable(repoRoot); err != nil {
 		return err
 	}
 
-	conf, err := InitConfig(repoRoot)
+	conf, err := initConfig(repoRoot)
 	if err != nil {
 		return err
 	}
 
-	identity, err := ipfs_cmds.IdentityConfig(4096)
+	identity, err := ipfs_cmds.IdentityConfig(nBitsForKeypair)
 	if err != nil {
 		return err
 	}
 	conf.Identity = identity
 
-	log.Infof("Initializing ipfs_demo node at %s\n", repoRoot)
+	log_repo.Infof("Initializing ipfs_demo node at %s\n", repoRoot)
 	if err := fsrepo.Init(repoRoot, conf); err != nil {
-		return err
-	}
-
-	if err := addConfigExtensions(repoRoot); err != nil {
 		return err
 	}
 
@@ -239,7 +202,37 @@ func DoInit(repoRoot string, nBitsForKeypair int, password string, mnemonic stri
 	return initializeIpnsKeyspace(repoRoot)
 }
 
-func InitializeRepo(dataDir, password, mnemonic string, creationDate time.Time) error {
+func initializeRepo(dataDir string) error {
 	// Initialize the IPFS repo if it does not already exist
-	return DoInit(dataDir, 2048, password, mnemonic, creationDate)
+	return doInit(dataDir, BitForKeyPair)
+}
+
+func Init() (repoPtah string, err error) {
+	//=========================================== Init ===========================================
+	// Set repo path
+	repoPath, err := getRepoPath()
+	if err != nil {
+		return "", err
+	}
+	fmt.Println(repoPath)
+
+	err = initializeRepo(repoPath)
+	if err != nil && err != errRepoExists {
+		return "", err
+	}
+	if err == errRepoExists {
+		//reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Force overwriting the db will destroy your existing keys and history. Are you really, really sure you want to continue? (y/n): ")
+		//resp, _ := reader.ReadString('\n')
+		resp := "no\n"
+		if strings.ToLower(resp) == "y\n" || strings.ToLower(resp) == "yes\n" || strings.ToLower(resp)[:1] == "y" {
+			os.RemoveAll(repoPath)
+			err = initializeRepo(repoPath)
+			if err != nil {
+				return "", err
+			}
+			fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
+		}
+	}
+	return repoPath, nil
 }
