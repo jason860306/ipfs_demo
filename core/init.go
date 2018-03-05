@@ -224,7 +224,7 @@ func Init() (repoPtah string, err error) {
 		//reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Force overwriting the db will destroy your existing keys and history. Are you really, really sure you want to continue? (y/n): ")
 		//resp, _ := reader.ReadString('\n')
-		resp := "no\n"
+		resp := "yes\n"
 		if strings.ToLower(resp) == "y\n" || strings.ToLower(resp) == "yes\n" || strings.ToLower(resp)[:1] == "y" {
 			os.RemoveAll(repoPath)
 			err = initializeRepo(repoPath)
