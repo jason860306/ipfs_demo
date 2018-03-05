@@ -32,8 +32,8 @@ var defBootstrapAddrs = []string{
 	//"/ip4/139.59.174.197/tcp/4001/ipfs/QmZfTbnpvPwxCjpCG3CXJ7pfexgkBZ2kgChAiRJrTK1HsM", // Brixton Village
 	//"/ip4/139.59.6.222/tcp/4001/ipfs/QmRDcEDK9gSViAevCHiE6ghkaBCU7rTuQj4BDpmCzRvRYg",   // Johari
 	//"/ip4/46.101.198.170/tcp/4001/ipfs/QmePWxsFT9wY3QuukgVDB7XZpqdKhrqJTHTXU7ECLDWJqX", // Duo Search
-	"/ip4/138.197.232.22/tcp/4001/ipfs/QmWViM25kq4Td71nQLAiyqMuGZoH12EoGuvp6hTnkb1XVt", // szj0306@do
-	"/ip4/35.194.251.184/tcp/4001/ipfs/QmR9z48iR96nRbgLM7Bt5MEiW9X5NxRXt3uyUCiWHS2qMw", // szj0306@gcp
+	"/ip4/138.197.232.22/tcp/4001/ipfs/Qmeb6UB2vxhyQkb6ntkwaSVFnKjiQfPxuGWs1FtAXftSJc", // szj0306@do
+	"/ip4/35.194.251.184/tcp/4001/ipfs/QmPgwsvLnrePX1ez8fbqd6gfLY3YWvrVfjtawV9X9mQhv7", // szj0306@gcp
 }
 
 /* Returns the directory to store repo data in.

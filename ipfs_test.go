@@ -43,13 +43,13 @@ func TestIpfs(t *testing.T) {
 	}
 	fmt.Printf("Daemon is ready\n")
 
-	//=========================================== Set ipfs log level ===========================================
-	logmsg, logerr := ipfs_cmds.Log(Node.Context, "all", "debug")
-	if logerr != nil {
-		log_test.Error(logerr.Error())
-		os.Exit(1)
-	}
-	log_test.Info(logmsg)
+	// //=========================================== Set ipfs log level ===========================================
+	// logmsg, logerr := ipfs_cmds.Log(Node.Context, "all", "debug")
+	// if logerr != nil {
+	// 	log_test.Error(logerr.Error())
+	// 	os.Exit(1)
+	// }
+	// log_test.Info(logmsg)
 
 	if os.Args[1] == "srv" {
 		//=========================================== Add ===========================================
