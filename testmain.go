@@ -1,4 +1,4 @@
-package ipfs_core
+package main
 
 import (
 	"io/ioutil"

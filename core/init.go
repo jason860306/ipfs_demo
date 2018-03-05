@@ -52,7 +52,7 @@ func getRepoPath() (string, error) {
 	return filepath.Clean(fullPath), nil
 }
 
-func datastoreConfig(repoRoot string) config.Datastore {
+func datastoreConfig() config.Datastore {
 	return config.Datastore{
 		StorageMax:         "10GB",
 		StorageGCWatermark: 90, // 90%
@@ -88,13 +88,17 @@ func datastoreConfig(repoRoot string) config.Datastore {
 	}
 }
 
-func initConfig(repoRoot string) (*config.Config, error) {
-	bootstrapPeers, err := config.ParseBootstrapPeers(defBootstrapAddrs)
+func initConfig(repoRoot string, nBitsForKeypair int) (*config.Config, error) {
+
+	identity, err := ipfs_cmds.IdentityConfig(nBitsForKeypair)
 	if err != nil {
 		return nil, err
 	}
 
-	datastore := datastoreConfig(repoRoot)
+	bootstrapPeers, err := config.ParseBootstrapPeers(defBootstrapAddrs)
+	if err != nil {
+		return nil, err
+	}
 
 	conf := &config.Config{
 
@@ -111,8 +115,9 @@ func initConfig(repoRoot string) (*config.Config, error) {
 			Gateway: "/ip4/127.0.0.1/tcp/4002",
 		},
 
-		Datastore: datastore,
+		Datastore: datastoreConfig(),
 		Bootstrap: config.BootstrapPeerStrings(bootstrapPeers),
+		Identity:  identity,
 		Discovery: config.Discovery{config.MDNS{
 			Enabled:  true,
 			Interval: 10,
@@ -173,16 +178,10 @@ func doInit(repoRoot string, nBitsForKeypair int) error {
 		return err
 	}
 
-	conf, err := initConfig(repoRoot)
+	conf, err := initConfig(repoRoot, nBitsForKeypair)
 	if err != nil {
 		return err
 	}
-
-	identity, err := ipfs_cmds.IdentityConfig(nBitsForKeypair)
-	if err != nil {
-		return err
-	}
-	conf.Identity = identity
 
 	log_repo.Infof("Initializing ipfs_demo node at %s\n", repoRoot)
 	if err := fsrepo.Init(repoRoot, conf); err != nil {
@@ -231,7 +230,6 @@ func Init() (repoPtah string, err error) {
 			if err != nil {
 				return "", err
 			}
-			fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
 		}
 	}
 	return repoPath, nil

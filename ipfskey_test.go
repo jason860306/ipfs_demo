@@ -1,27 +1,16 @@
-package ipfs_core
+package main
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
 	"os"
+	"testing"
 
-	//"crypto/sha256"
-	//"crypto/x509"
-	//"crypto/rsa"
 	"crypto/rand"
-	//"crypto/hmac"
-	//"encoding/base64"
 	"encoding/pem"
 
-	//"github.com/tyler-smith/go-bip39"
-	//"github.com/ipfs/go-ipfs/repo/config"
-
-	//peer "gx/ipfs/QmXYjuNuxVzXKJCfWasQk1RqkhVLDM9jtUKhqc2WPQmFSB/go-libp2p-peer"
 	libp2p "gx/ipfs/QmaPbCnUMBohSGo3KnxEa2bHqyJVVeEEcwtqJAYxerieBo/go-libp2p-crypto"
-	//proto "gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
-	//pb "gx/ipfs/QmaPbCnUMBohSGo3KnxEa2bHqyJVVeEEcwtqJAYxerieBo/go-libp2p-crypto/pb"
-	"testing"
 )
 
 func exportRsaPrivateKeyAsPemStr(privkey libp2p.PrivKey) string {

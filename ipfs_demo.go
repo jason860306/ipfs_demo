@@ -1,42 +1,62 @@
-package ipfs_core
+package main
 
 import (
-	"bufio"
-	"bytes"
-	"flag"
 	"fmt"
 	"os"
+	//"flag"
+	"bufio"
+	"bytes"
 	"path/filepath"
 	"runtime"
 	"strconv"
-	"testing"
 	"time"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/op/go-logging"
 
+	//"github.com/ipfs/go-ipfs/commands"
+	//"github.com/ipfs/go-ipfs/repo/config"
+	//"github.com/ipfs/go-ipfs/repo/fsrepo"
+
+	"github.com/jason860306/ipfs_demo/core"
 	"github.com/jason860306/ipfs_demo/ipfs_cmds"
 )
 
 var log_test = logging.MustGetLogger("test")
 
-func TestIpfs(t *testing.T) {
-	args := flag.Args()
-	os.Args = append([]string{os.Args[0]}, args...)
+func main() {
+	//args := flag.Args()
+	//os.Args = append([]string{os.Args[0]}, args...)
 	if len(os.Args) != 2 {
 		fmt.Printf("usage: %s [cli|srv]", os.Args[0])
 		os.Exit(1)
 	}
 	//=========================================== Init ===========================================
 	// Set repo path
-	repoPath, err := Init()
+	repoPath, err := ipfs_core.Init()
 	if err != nil {
 		os.Exit(1)
 	}
 	fmt.Printf("ipfs_demo repo initialized at %s\n", repoPath)
 
+	//ctx := commands.Context{}
+	//ctx.Online = true
+	//ctx.ConfigRoot = repoPath
+	//ctx.LoadConfig = func(path string) (*config.Config, error) {
+	//	return fsrepo.ConfigAt(repoPath)
+	//}
+	////ctx.ConstructNode = func() (*core.IpfsNode, error) {
+	////	return nd, nil
+	////}
+	// logmsg, logerr := ipfs_cmds.Log(ctx, "all", "debug")
+	// if logerr != nil {
+	// 	log_test.Error(logerr.Error())
+	// 	os.Exit(1)
+	// }
+	// log_test.Info(logmsg)
+
 	//=========================================== Start ===========================================
-	err = Start(repoPath)
+	err = ipfs_core.Start(repoPath)
 	if err != nil {
 		log_test.Infof("%s\n", err.Error())
 		os.Exit(1)
@@ -44,7 +64,7 @@ func TestIpfs(t *testing.T) {
 	fmt.Printf("Daemon is ready\n")
 
 	// //=========================================== Set ipfs log level ===========================================
-	// logmsg, logerr := ipfs_cmds.Log(Node.Context, "all", "debug")
+	// logmsg, logerr := ipfs_cmds.Log(ipfs_core.Node.Context, "all", "debug")
 	// if logerr != nil {
 	// 	log_test.Error(logerr.Error())
 	// 	os.Exit(1)
@@ -55,7 +75,7 @@ func TestIpfs(t *testing.T) {
 		//=========================================== Add ===========================================
 		//README.md on linux:   zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9
 		//README.md on windows: zb2rhjwNxFKtD3Qg4nV3Qf4CH77bvEn7ndzM4ysXCwxvpLXeo
-		hash, err := ipfs_cmds.AddFile(Node.Context, filepath.Join("./", "README.md"))
+		hash, err := ipfs_cmds.AddFile(ipfs_core.Node.Context, filepath.Join("./", "README.md"))
 		if err != nil {
 			log_test.Info(err.Error())
 			os.Exit(1)
@@ -68,7 +88,7 @@ func TestIpfs(t *testing.T) {
 			log_test.Info("Ipfs add file successfully: ", hash)
 		}
 		//test.bin: zdj7WdnQBd3Yf4KPuUTZ9mkAQ6Rfd87H4h2f7d3KxzgW4kJ9U
-		hash, err = ipfs_cmds.AddFile(Node.Context, filepath.Join("./resource", "test.bin"))
+		hash, err = ipfs_cmds.AddFile(ipfs_core.Node.Context, filepath.Join("./resource", "test.bin"))
 		if err != nil {
 			log_test.Info(err.Error())
 			os.Exit(1)
@@ -84,7 +104,7 @@ func TestIpfs(t *testing.T) {
 		////peer := "/ip4/138.197.232.22/tcp/4001/ipfs/QmZjmQH4e7opwmeFc23vUZ4nwuPw1oJgFKSpJoAJgrpQiy"
 		//peer := "/ip4/97.64.43.18/tcp/4001/ipfs/QmPUrqtsYZzpebQ4sYHiQqjtTGCEGUVu194jhHuVpBnGb3"
 		//for i := 0; i < 5; i++ {
-		//	peers, err := ipfs.ConnectTo(Node.Context, peer)
+		//	peers, err := ipfs.ConnectTo(ipfs_core.Node.Context, peer)
 		//	if err != nil {
 		//		log_test.Info(err.Error())
 		//		//os.Exit(1)
@@ -105,8 +125,9 @@ func TestIpfs(t *testing.T) {
 	} else {
 		file_hash = "zb2rhneqJaf4y9vQpb9o1yqyejARwiR9PDuz8bXjRTAE5iLT9"
 	}
+
 	for i := 0; i < 3; i++ {
-		dataText, err := ipfs_cmds.Cat(Node.Context, file_hash, time.Second*120)
+		dataText, err := ipfs_cmds.Cat(ipfs_core.Node.Context, file_hash, time.Second*120)
 		if err != nil {
 			log_test.Info(err.Error())
 			<-time.After(1 * time.Second)
@@ -122,7 +143,7 @@ func TestIpfs(t *testing.T) {
 		for {
 			pbool := make(chan []string)
 			go func() {
-				peers, err := ipfs_cmds.ConnectedPeers(Node.Context)
+				peers, err := ipfs_cmds.ConnectedPeers(ipfs_core.Node.Context)
 				if err != nil {
 					errInfo := make([]string, 1)
 					errInfo = append(errInfo, err.Error())
@@ -155,7 +176,7 @@ func TestIpfs(t *testing.T) {
 	// pin add
 	for _, hash := range fhash {
 		for j := 0; j < 3; j++ {
-			err := ipfs_cmds.Pin(Node.Context, hash)
+			err := ipfs_cmds.Pin(ipfs_core.Node.Context, hash)
 			if err != nil {
 				log_test.Info(err.Error())
 				<-time.After(1 * time.Second)
@@ -166,7 +187,7 @@ func TestIpfs(t *testing.T) {
 		}
 	}
 	// pin ls
-	objs1, err := ipfs_cmds.PinLs(Node.Context)
+	objs1, err := ipfs_cmds.PinLs(ipfs_core.Node.Context)
 	if err != nil {
 		log_test.Info(err.Error())
 	} else {
@@ -177,7 +198,7 @@ func TestIpfs(t *testing.T) {
 	// unpin
 	for _, hash := range fhash {
 		for j := 0; j < 3; j++ {
-			err := ipfs_cmds.UnPinDir(Node.Context, hash)
+			err := ipfs_cmds.UnPinDir(ipfs_core.Node.Context, hash)
 			if err != nil {
 				log_test.Info(err.Error())
 				<-time.After(1 * time.Second)
@@ -188,7 +209,7 @@ func TestIpfs(t *testing.T) {
 		}
 	}
 	// pin ls
-	objs2, err := ipfs_cmds.PinLs(Node.Context)
+	objs2, err := ipfs_cmds.PinLs(ipfs_core.Node.Context)
 	if err != nil {
 		log_test.Info(err.Error())
 	} else {
@@ -210,7 +231,7 @@ func TestIpfs(t *testing.T) {
 			fnamebuf.WriteString("_")
 			fnamebuf.WriteString(strconv.Itoa(j))
 			ofpath := filepath.Join(home, fnamebuf.String())
-			d, err := ipfs_cmds.Get(Node.Context, hash, ofpath, time.Second*120)
+			d, err := ipfs_cmds.Get(ipfs_core.Node.Context, hash, ofpath, time.Second*120)
 			if err != nil {
 				log_test.Info(err.Error())
 				<-time.After(1 * time.Second)
